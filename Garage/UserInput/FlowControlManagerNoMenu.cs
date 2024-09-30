@@ -18,11 +18,17 @@ internal class FlowControlManagerNoMenu : IFlowControlManager
         commandList = new CommandList(new ICommand[]
         {
             new Command(
-            "help",
-            "help",
-            "Prints help information.",
-            PrintHelp
+                "help",
+                "help",
+                "Prints help information.",
+                PrintHelp
             ),
+            new Command(
+                "quit",
+                "",
+                "Exits the application.",
+                (string[] parameters) => {/*Environment.Exit(0)*/}
+            )
         },
         defaultCommand: new Command(
             "router",
@@ -44,6 +50,11 @@ internal class FlowControlManagerNoMenu : IFlowControlManager
         while (input != "quit" && input != "exit")
         {
             input = Utilities.PromptUserForString("", ui);
+
+            if(input == "quit" || input == "exit") 
+            { 
+                return; 
+            }
 
             var inputSplit = input.Split(' ');
 
