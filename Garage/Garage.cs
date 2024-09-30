@@ -5,17 +5,19 @@ namespace Garage;
 internal class Garage<T> where T : IVehicle
 {
     public int Capacity { get; }
+    public string Name { get; }
 
     private GarageSpot<T>[] spots;
 
-    public Garage(int capacity)
+    public Garage(int capacity, string name)
     {
         Capacity = capacity;
         spots = new GarageSpot<T>[capacity];
-        for(int i = 0; i < capacity; i++)
-        {
-            spots[i] = new GarageSpot<T>();
-        }
+        //for (int i = 0; i < capacity; i++)
+        //{
+        //    spots[i] = new GarageSpot<T>();
+        //}
+        Name = name;
     }
 
     /// <summary>
@@ -81,14 +83,14 @@ internal class Garage<T> where T : IVehicle
     /// </summary>
     /// <param name="registration"></param>
     /// <returns>The vehicle matching the registration.</returns>
-    public T GetVehicle(string registration) => spots.Where(x => x != null && x!.Value.Registration == registration).FirstOrDefault().Value;
+    public T GetVehicle(string registration) => spots.Where(x => x != null).Where(x => x!.Value.Registration == registration).FirstOrDefault().Value;
 
     /// <summary>
     /// Returns whether or not the garage contains a vehicle with the registration.
     /// </summary>
     /// <param name="registration"></param>
     /// <returns>Whether or not the garage contains a vehicle with the registration.</returns>
-    public bool HasVehicle(string registration) => spots.Any(x => x != null && x.Value.Registration == registration);
+    public bool HasVehicle(string registration) => spots.Where(x => x != null && x.Value != null).Any(x => x.Value.Registration == registration);
 
     /// <summary>
     /// Removes all matching vehicles.
