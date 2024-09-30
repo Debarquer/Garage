@@ -2,7 +2,7 @@
 
 internal interface ICommandList
 {
-    ICommand[] Commands { get; set; }
+    ICommand[] Commands { get; }
 
     /// <summary>
     /// Handles an input command and print the output to the ui.
@@ -15,5 +15,5 @@ internal interface ICommandList
     /// Prints the help information of all the commands in the list, or a specific command if the id is passed as a parameter.
     /// </summary>
     /// <param name="parameters"></param>
-    void PrintHelp(string[] parameters);
+    void PrintHelp(string[] parameters, IUI ui);
 }
