@@ -126,7 +126,7 @@ namespace Garage
             ui.PrintMessage($"Vehicles in garage {garages[garage].Name}: ");
             foreach(T vehicle in vehicles)
             {
-                ui.PrintMessage($"{vehicle}: {vehicle.Registration}");
+                ui.PrintMessage($"{vehicle.GetType()}: {vehicle}");
             }
         }
 

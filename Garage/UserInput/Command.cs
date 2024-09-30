@@ -66,13 +66,11 @@ internal class Command : ICommand
         if (parameters == null && minimumNumberOfParameters > 0 ||
             parameters.Length < minimumNumberOfParameters)
         {
-            Console.WriteLine($"Too few parameters. {name} requires at least {minimumNumberOfParameters} parameters.");
-            return false;
+            throw new ArgumentOutOfRangeException($"Too few parameters. {name} requires at least {minimumNumberOfParameters} parameters.");
         }
         else if (parameters.Length > maximumNumberOfParameters)
         {
-            Console.WriteLine($"Too many parameters. {name} requires no more than {maximumNumberOfParameters} parameters.");
-            return false;
+            throw new ArgumentOutOfRangeException($"Too many parameters. {name} requires no more than {maximumNumberOfParameters} parameters.");
         }
 
         return true;

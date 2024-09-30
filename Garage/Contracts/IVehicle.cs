@@ -5,7 +5,7 @@ namespace Garage.Contracts;
 internal interface IVehicle
 {
     public string Registration {  get; }
-    public Color Color { get; }
+    public string Color { get; }
     public int NumberOfWheels { get; }
     public int MaxSpeed { get; }
     public string Owner { get; }

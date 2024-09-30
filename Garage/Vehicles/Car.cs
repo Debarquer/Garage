@@ -1,16 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Drawing;
 
-namespace Garage.Vehicles
+namespace Garage.Vehicles;
+
+internal class Car : Vehicle
 {
-    internal class Car : Vehicle
-    {
-        public Car(string registration) : base(registration)
-        {
+    FuelType FuelType;
 
-        }
+    public Car(string registration,
+    string color,
+    int numberOfWheels,
+    int maxSpeed,
+    string owner,
+    FuelType fuelType) : base(registration, color, numberOfWheels, maxSpeed, owner)
+    {
+        this.FuelType = fuelType;
     }
 }

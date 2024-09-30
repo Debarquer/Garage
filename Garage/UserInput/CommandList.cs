@@ -61,7 +61,15 @@ internal class CommandList : ICommandList
             return;
         }
 
-        if (!command.ValidateCommand(parameters)) return;
+        try
+        {
+            command.ValidateCommand(parameters);
+        }
+        catch(ArgumentOutOfRangeException ex)
+        {
+            ui.PrintMessage(ex.ParamName);
+            return;
+        }
 
         command.Invoke(parameters!);
     }

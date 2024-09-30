@@ -12,17 +12,31 @@ namespace Garage.Vehicles
     {
         public string Registration { get; protected set; }
 
-        public Color Color => throw new NotImplementedException();
+        public string Color { get; protected set; }
 
-        public int NumberOfWheels => throw new NotImplementedException();
+        public int NumberOfWheels { get; protected set; }
 
-        public int MaxSpeed => throw new NotImplementedException();
+        public int MaxSpeed { get; protected set; }
 
-        public string Owner => throw new NotImplementedException();
+        public string Owner { get; protected set; }
 
-        public Vehicle(string registration)
-        {
+        public Vehicle(
+            string registration,
+            string color,
+            int numberOfWheels,
+            int maxSpeed,
+            string owner) 
+        {  
             Registration = registration;
+            Color = color;
+            NumberOfWheels = numberOfWheels;
+            MaxSpeed = maxSpeed;
+            Owner = owner;
+        }
+
+        public override string ToString()
+        {
+            return $"{Registration}: {Color} {NumberOfWheels} wheels Max {MaxSpeed}kmph Owner: {Owner}";
         }
     }
 }

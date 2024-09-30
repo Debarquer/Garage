@@ -8,5 +8,10 @@ namespace Garage
         {
             Console.WriteLine(message);
         }
+
+        public string GetString()
+        {
+            return Console.ReadLine();
+        }
     }
 }

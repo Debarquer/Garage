@@ -1,5 +1,8 @@
 ﻿using Garage.Contracts;
 using Garage.Vehicles;
+using System.Diagnostics.Metrics;
+using System.Drawing;
+using System.Numerics;
 
 namespace Garage.UserInput
 {
@@ -40,7 +43,7 @@ namespace Garage.UserInput
                 ),
                 new Command(
                    "add",
-                   "garage type",
+                   "garage",
                    "Adds a vehicle to the garage. Only unique registrations are allowed.",
                    AddVehicle
                 ),
@@ -76,17 +79,60 @@ namespace Garage.UserInput
 
         private void AddVehicle(string[] parameters)
         {
-            ui.PrintMessage($"Please enter the registration:");
-            string registration = Console.ReadLine();
+            string color = Utilities.PromptUserForValidString("Please enter a color:", ui);
+            int numberOfWheels = Utilities.PromptUserForValidNumber("Please enter the number of wheels:", ui);
+            int maxSpeed = Utilities.PromptUserForValidNumber("Please enter the max speed:", ui);
+            string owner = Utilities.PromptUserForValidString("Please enter the owners first name:", ui);
+            string registration = Utilities.PromptUserForValidInput("Please enter the registration:", (string s) => s.Length > 0, ui);
+
+            string type = Utilities.PromptUserForValidInput("Please enter the vehicle type (airplane, boat, bus, car or motorcycle):",
+                (string s) =>
+                {
+                    return s == "airplane" || s == "boat" || s == "bus" || s == "car" || s == "motorcycle";
+                },
+                ui,
+                "Please enter airplane, boat, bus, car or motorcycle"
+                );
 
             Vehicle v = null;
-            switch (parameters[1].ToLower())
+            switch (type.ToLower())
             {
-                case "car":
-                    v = new Car(registration);
+                case "airplane":
+                    int numberOfEngines = Utilities.PromptUserForValidNumber("Please enter the number of engines:", ui);
+                    v = new Airplane(registration, color, numberOfWheels, maxSpeed, owner, numberOfEngines);
                     break;
                 case "boat":
-                    v = new Boat(registration);
+                    int length = Utilities.PromptUserForValidNumber("Please enter the length: ", ui);
+                    v = new Boat(registration, color, numberOfWheels, maxSpeed, owner, length);
+                    break;
+                case "bus":
+                    int numberOfSeats = Utilities.PromptUserForValidNumber("Please enter the number of seats:", ui);
+                    v = new Bus(registration, color, numberOfWheels, maxSpeed, owner, numberOfSeats);
+                    break;
+                case "car":
+                    string input = Utilities.PromptUserForValidInput("Please enter the number fuel type (gas or diesel):",
+                        (string s) => s == "gas" || s == "diesel",
+                        ui,
+                        "Please enter either gas or diesel"
+                        );
+                    FuelType fuelType;
+                    switch (input)
+                    {
+                        case "gas":
+                            fuelType = FuelType.gas;
+                            break;
+                        case "diesel":
+                            fuelType = FuelType.diesel;
+                            break;
+                        default:
+                            ui.PrintMessage($"{input} is not a valid fuel type.");
+                            return;
+                    }
+                    v = new Car(registration, color, numberOfWheels, maxSpeed, owner, fuelType);
+                    break;
+                case "motorcycle":
+                    int cylinderVolume = Utilities.PromptUserForValidNumber("Please enter the cylinder volume:", ui);
+                    v = new Motorcycle(registration, color, numberOfWheels, maxSpeed, owner, cylinderVolume);
                     break;
                 default:
                     ui.PrintMessage($"AddVehicle error: {parameters[1]} is not a valid vehicle type.");
@@ -101,8 +147,7 @@ namespace Garage.UserInput
 
         private void RemoveVehicle(string[] parameters)
         {
-            ui.PrintMessage($"Please enter the registration:");
-            string registration = Console.ReadLine();
+            string registration = Utilities.PromptUserForValidString($"Please enter the registration:", ui);
 
             garageHandler.RemoveVehicle(registration, parameters[0]);
         }

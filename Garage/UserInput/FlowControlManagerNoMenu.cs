@@ -37,19 +37,19 @@ internal class FlowControlManagerNoMenu : IFlowControlManager
     /// </summary>
     public void ManageInput()
     {
-        Console.WriteLine("Welcome to the program.");
-        Console.WriteLine("Navigate the meny by typing in commands. Enter help for commands");// or help [command] for command specific documentation.");
+        ui.PrintMessage("Welcome to the program.");
+        ui.PrintMessage("Navigate the meny by typing in commands. Enter help for commands");// or help [command] for command specific documentation.");
 
         string input = string.Empty;
         while (input != "quit" && input != "exit")
         {
-            input = Console.ReadLine();
+            input = Utilities.PromptUserForString("", ui);
 
             var inputSplit = input.Split(' ');
 
             if (inputSplit == null || inputSplit.Length == 0)
             {
-                Console.WriteLine("Invalid input.");
+                ui.PrintMessage("Invalid input.");
                 continue;
             }
 
