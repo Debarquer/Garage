@@ -9,9 +9,4 @@ internal abstract class CommandManager
 
     protected ICommandList CommandList { get; set; }
     public virtual void HandleInput(string inputCommand, string[]? parameters, IUI ui) => CommandList.HandleInput(inputCommand, parameters, ui);
-
-    protected CommandManager(ICommandList commandList)
-    {
-        CommandList = commandList;
-    }
 }

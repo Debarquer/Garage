@@ -19,7 +19,7 @@ internal class FlowControlManagerNoMenu : IFlowControlManager
         {
             new Command(
             "help", 
-            "", 
+            "help", 
             "Prints help information.",
             PrintHelp
             ),
