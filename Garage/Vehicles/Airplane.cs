@@ -15,4 +15,9 @@ internal class Airplane : Vehicle
     {
         NumberOfEngines = numberOfEngines;
     }
+
+    public override string ToString()
+    {
+        return base.ToString() + $" Number of engines: {NumberOfEngines}";
+    }
 }

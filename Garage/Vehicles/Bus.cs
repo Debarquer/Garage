@@ -15,4 +15,9 @@ internal class Bus : Vehicle
     {
         NumberOfSeats = numberOfSeats;
     }
+
+    public override string ToString()
+    {
+        return base.ToString() + $" Number of seats: {NumberOfSeats}";
+    }
 }

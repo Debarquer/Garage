@@ -15,4 +15,9 @@ internal class Car : Vehicle
     {
         this.FuelType = fuelType;
     }
+
+    public override string ToString()
+    {
+        return base.ToString() + $" Fuel type: {FuelType}";
+    }
 }
