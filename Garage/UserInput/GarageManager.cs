@@ -42,6 +42,13 @@ namespace Garage.UserInput
                    PrintTypes
                 ),
                 new Command(
+                   "printpattern",
+                   "garage ?color ?numberOfWheels ?maxSpeed ?owner ?registration",
+                   "Prints all vehicles in garage matching the pattern. Use the pattern type:value.",
+                   PrintVehiclesMatchingPattern,
+                   true
+                ),
+                new Command(
                    "add",
                    "garage",
                    "Adds a vehicle to the garage. Only unique registrations are allowed.",
@@ -77,6 +84,95 @@ namespace Garage.UserInput
         private void PrintAllVehicles(string[] parameters) => garageHandler.PrintAllVehicles(parameters[0]);
         private void PrintTypes(string[] parameters) => garageHandler.PrintTypes(parameters[0]);
 
+        private void PrintVehiclesMatchingPattern(string[] parameters)
+        {         
+            string? color = null;
+            int? numberOfWheels = null;
+            int? maxSpeed = null;
+            string? owner = null;
+            string? registration = null;
+            string? type = null;
+
+            for(int i = 1; i < parameters.Length; i++)
+            {
+                string[] parameterSplit = parameters[i].Split(':');
+                if (parameterSplit == null || parameterSplit.Length < 2)
+                {
+                    ui.PrintMessage("Invalid parameter");
+                    return;
+                }
+
+                string paramterType = parameterSplit[0];
+                string parameterValue = parameterSplit[1];
+                switch (paramterType)
+                {
+                    case "color":
+                        color = parameterValue;
+                        break;
+                    case "numberOfWheels":
+                        if(int.TryParse(parameterValue, out _))
+                        {
+                            numberOfWheels = int.Parse(parameterValue);
+                        }
+                        else
+                        {
+                            ui.PrintMessage($"{paramterType}:({parameterValue}) is not a valid number.");
+                        }
+                        break;
+                    case "maxSpeed":
+                        if (int.TryParse(parameterValue, out _))
+                        {
+                            maxSpeed = int.Parse(parameterValue);
+                        }
+                        else
+                        {
+                            ui.PrintMessage($"{paramterType}:({parameterValue}) is not a valid number.");
+                        }
+                        break;
+                    case "owner":
+                        owner = parameterValue;
+                        break;
+                    case "registration":
+                        registration = parameterValue;
+                        break;
+                    case "type":
+                        if (ValidateVehicleType(parameterValue))
+                        {
+                            type = parameterValue;
+                        }
+                        else
+                        {
+                            ui.PrintMessage($"{paramterType}:({parameterValue}) is not a valid type.");
+                        }
+                        break;
+                    default:
+                        ui.PrintMessage($"{paramterType}:({parameterValue}) is not valid.");
+                        break;
+                }
+            }
+
+            //string type = Utilities.PromptUserForValidInput("Please enter the vehicle type (airplane, boat, bus, car or motorcycle):",
+            //    (string s) =>
+            //    {
+            //        return s == "airplane" || s == "boat" || s == "bus" || s == "car" || s == "motorcycle";
+            //    },
+            //    ui,
+            //    "Please enter airplane, boat, bus, car or motorcycle"
+            //    );         
+
+            //if (v != null)
+            //{
+            //    garageHandler.AddVehicle(v, parameters[0]);
+            //}
+
+            garageHandler.PrintVehiclesMatchingPattern(parameters[0], registration, color, numberOfWheels, maxSpeed, owner, type);
+        }
+
+        private bool ValidateVehicleType(string s)
+        {
+            return s == "airplane" || s == "boat" || s == "bus" || s == "car" || s == "motorcycle";
+        }
+
         private void AddVehicle(string[] parameters)
         {
             string color = Utilities.PromptUserForValidString("Please enter a color:", ui);
@@ -94,7 +190,7 @@ namespace Garage.UserInput
                 "Please enter airplane, boat, bus, car or motorcycle"
                 );
 
-            Vehicle v = null;
+            IVehicle v = null;
             switch (type.ToLower())
             {
                 case "airplane":

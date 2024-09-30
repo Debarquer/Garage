@@ -9,11 +9,12 @@ internal class Command : ICommand
     private string name { get; set; }
     private int minimumNumberOfParameters { get; }
     private int maximumNumberOfParameters { get; }
+    private bool unlimitedParameters { get; }
     private string parameters { get; set; }
     private string description { get; set; }
     private MyAction myAction { get; }
 
-    public Command(string name, string parameters, string description, MyAction myAction)
+    public Command(string name, string parameters, string description, MyAction myAction, bool unlimitedParameters = false)
     {
         this.name = name;
         minimumNumberOfParameters = parameters == "" ? 0 : parameters.Split(' ').Length - parameters.Split(' ').Where(x => x.StartsWith("?")).Count();
@@ -21,6 +22,7 @@ internal class Command : ICommand
         this.parameters = parameters;
         this.description = description;
         this.myAction = myAction;
+        this.unlimitedParameters = unlimitedParameters;
     }
 
     public void PrintHelp(IUI ui)
@@ -29,7 +31,11 @@ internal class Command : ICommand
         string[] parametersArray = parameters.Split(" ");
 
         string parametersString = "";
-        if (minimumNumberOfParameters == maximumNumberOfParameters)
+        if (unlimitedParameters)
+        {
+            parametersString += $"Accepts any number of parameters. ";
+        }
+        else if (minimumNumberOfParameters == maximumNumberOfParameters)
         {
             parametersString += $"{minimumNumberOfParameters} Parameters: ";
         }
