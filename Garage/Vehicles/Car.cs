@@ -1,10 +1,8 @@
-﻿using System.Drawing;
-
-namespace Garage.Vehicles;
+﻿namespace Garage.Vehicles;
 
 internal class Car : Vehicle
 {
-    FuelType FuelType;
+    public FuelType FuelType { get; private set; }
 
     public Car(string registration,
     string color,

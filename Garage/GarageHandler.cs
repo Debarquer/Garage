@@ -59,6 +59,12 @@ namespace Garage
         {
             garage = garage.ToLower();
 
+            if (!garages.ContainsKey(garage))
+            {
+                ui.PrintMessage($"Garage: No garage with name {garage} found.");
+                return default;
+            }
+
             return garages[garage].GetAllVehicles();
         }
 
@@ -184,32 +190,81 @@ namespace Garage
             }
         }
 
-        public void PrintVehiclesMatchingPattern(string garage,
-                                                 string? registration,
-                                                 string? color,
-                                                 int? numberOfWheels,
-                                                 int? maxSpeed,
-                                                 string? owner,
-                                                 string? type)
+        public void PrintVehiclesMatchingPattern(string garage, string[] parameters)
         {
-            Func<T, bool> pattern = (T vehicle) => (
-                    (registration == null || registration == vehicle.Registration) &&
-                    (color == null || color == vehicle.Color) &&
-                    (numberOfWheels == null || numberOfWheels == vehicle.NumberOfWheels) &&
-                    (maxSpeed == null || maxSpeed == vehicle.MaxSpeed) &&
-                    (owner == null || owner == vehicle.Owner)) &&
-                    (type == null || type.ToLower() == vehicle.GetType().Name.ToLower());
+            T[] v = GetAllVehicles(garage);
 
-            garage = garage.ToLower();
-            if (!garages.ContainsKey(garage))
+            if(v == null || v.Length == 0)
             {
-                ui.PrintMessage($"Garage: No garage with name {garage} found.");
+                ui.PrintMessage($"No vehicles found in garage {garage}");
                 return;
             }
 
-            foreach (T vehicle in garages[garage])
+            bool matches = true;
+
+            List<T> vehicles = new List<T>();   
+
+            foreach(var vehicle in v)
             {
-                ui.PrintMessage(vehicle.ToString());
+                matches = true;
+                foreach(string s in parameters)
+                {
+                    string[] parameterSplit = s.Split(':');
+                    if (parameterSplit.Length != 2)
+                    {
+                        ui.PrintMessage("Invalid paramter");
+                        matches = false;
+                        break;
+                    }
+
+                    string parameterName = parameterSplit[0];
+                    string parameterValue = parameterSplit[1];
+
+                    if(parameterName == "type")
+                    {
+                        if(parameterValue.ToLower() == vehicle.GetType().Name.ToLower())
+                        {
+                            continue;
+                        }
+                        else
+                        {
+                            matches = false;
+                            break;
+                        }
+                    }
+
+                    var props = vehicle.GetType().GetProperties();
+
+                    bool foundProp = false;
+                    foreach (var prop in props)
+                    {
+                        if (prop.Name.ToLower() == parameterName.ToLower())
+                        {
+                            foundProp = true;
+                            if (prop.GetValue(vehicle).ToString() != parameterValue)
+                            {
+                                matches = false;
+                                break;
+                            }
+                        }
+                    }
+                    if (!foundProp)
+                    {
+                        matches = false;
+                        break;
+                    }
+                }
+
+                if(matches)
+                {
+                    vehicles.Add(vehicle);
+                }
+            }
+
+            ui.PrintMessage($"{vehicles.Count} matches.");
+            foreach(var vehicle in vehicles)
+            {
+                ui.PrintMessage($"{vehicle.ToString()}");
             }
         }
     }
