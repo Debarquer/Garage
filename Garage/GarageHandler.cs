@@ -18,6 +18,8 @@ namespace Garage
 
         public void AddVehicle(T vehicle, string garage)
         {
+            garage = garage.ToLower();
+
             try
             {
                 garages[garage].AddVehicle(vehicle);
@@ -38,11 +40,15 @@ namespace Garage
 
         public T[] GetAllVehicles(string garage)
         {
+            garage = garage.ToLower();
+
             return garages[garage].GetAllVehicles();
         }
 
         public T[] GetAllVehicles(Func<T, bool> pattern, string garage)
         {
+            garage = garage.ToLower();
+
             if (!garages.ContainsKey(garage))
             {
                 ui.PrintMessage($"Garage: No garage with name {garage} found.");
@@ -63,6 +69,9 @@ namespace Garage
 
         public T GetVehicle(string registration, string garage)
         {
+            registration = registration.ToLower();
+            garage = garage.ToLower();
+
             if (!garages.ContainsKey(garage))
             {
                 ui.PrintMessage($"Garage: No garage with name {garage} found.");
@@ -79,10 +88,13 @@ namespace Garage
             return vehicle;
         }
 
-        public bool HasVehicle(string registration, string garage) => garages[garage].HasVehicle(registration);
+        public bool HasVehicle(string registration, string garage) => garages[garage.ToLower()].HasVehicle(registration.ToLower());
 
         public void RemoveVehicle(string registration, string garage)
         {
+            registration = registration.ToLower();
+            garage = garage.ToLower();
+
             try
             {
                 garages[garage].RemoveVehicle(registration);
@@ -103,6 +115,7 @@ namespace Garage
 
         public void PrintAllVehicles(string garage)
         {
+            garage = garage.ToLower();
             if (!garages.ContainsKey(garage))
             {
                 ui.PrintMessage($"Garage: No garage with name {garage} found.");
@@ -119,14 +132,16 @@ namespace Garage
 
         public void PrintTypes(string garage)
         {
-            T[] vehicles = GetAllVehicles(garage);
+            T[] vehicles = GetAllVehicles(garage.ToLower());
             IEnumerable<IGrouping<Type, T>> grouping = vehicles.GroupBy(x => x.GetType());
 
             if(grouping.Count() == 0) 
             {
                 ui.PrintMessage("No vehicles found.");
+                return;
             }
-            foreach (var item in grouping)
+
+            foreach (IGrouping<Type, T> item in grouping)
             {
                 ui.PrintMessage($"{item.Key}: {item.Count()}");
             }
