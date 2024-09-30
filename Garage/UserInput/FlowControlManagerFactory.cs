@@ -1,6 +1,6 @@
 ﻿using Garage.Contracts;
 
-namespace Garage;
+namespace Garage.UserInput;
 
 internal class FlowControlManagerFactory : IFlowControlManagerFactory
 {

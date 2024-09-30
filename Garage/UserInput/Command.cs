@@ -1,6 +1,6 @@
 ﻿using Garage.Contracts;
 
-namespace Garage;
+namespace Garage.UserInput;
 
 delegate void MyAction(string[] parameters);
 
@@ -9,7 +9,7 @@ internal class Command : ICommand
     private string name { get; set; }
     private int minimumNumberOfParameters { get; }
     private int maximumNumberOfParameters { get; }
-    private string parameters {  get; set; }
+    private string parameters { get; set; }
     private string description { get; set; }
     private MyAction myAction { get; }
 
@@ -29,7 +29,7 @@ internal class Command : ICommand
         string[] parametersArray = parameters.Split(" ");
 
         string parametersString = "";
-        if(minimumNumberOfParameters == maximumNumberOfParameters)
+        if (minimumNumberOfParameters == maximumNumberOfParameters)
         {
             parametersString += $"{minimumNumberOfParameters} Parameters: ";
         }
@@ -38,9 +38,9 @@ internal class Command : ICommand
             parametersString += $"[{minimumNumberOfParameters}-{maximumNumberOfParameters}] Parameters: ";
         }
 
-        foreach(string parameter in parametersArray)
+        foreach (string parameter in parametersArray)
         {
-            if(parameter.StartsWith("?") )
+            if (parameter.StartsWith("?"))
             {
                 parametersString += $"{parameter.Split("?")[1]}(Optional) ";
             }
@@ -63,7 +63,7 @@ internal class Command : ICommand
 
     public bool ValidateCommand(string[]? parameters)
     {
-        if(parameters == null && minimumNumberOfParameters > 0 || 
+        if (parameters == null && minimumNumberOfParameters > 0 ||
             parameters.Length < minimumNumberOfParameters)
         {
             Console.WriteLine($"Too few parameters. {name} requires at least {minimumNumberOfParameters} parameters.");

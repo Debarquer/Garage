@@ -1,6 +1,6 @@
 ﻿using Garage.Contracts;
 
-namespace Garage;
+namespace Garage.UserInput;
 
 internal abstract class CommandManager
 {

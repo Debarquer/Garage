@@ -1,4 +1,4 @@
-﻿using Garage;
+﻿using Garage.UserInput;
 
 internal class Program
 {

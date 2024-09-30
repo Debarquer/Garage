@@ -119,8 +119,8 @@ namespace Garage
 
         public void PrintTypes(string garage)
         {
-            var vehicles = GetAllVehicles(garage);
-            var grouping = vehicles.GroupBy(x => x.GetType());
+            T[] vehicles = GetAllVehicles(garage);
+            IEnumerable<IGrouping<Type, T>> grouping = vehicles.GroupBy(x => x.GetType());
 
             if(grouping.Count() == 0) 
             {

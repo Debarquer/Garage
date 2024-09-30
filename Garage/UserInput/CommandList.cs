@@ -1,6 +1,6 @@
 ﻿using Garage.Contracts;
 
-namespace Garage;
+namespace Garage.UserInput;
 
 internal class CommandList : ICommandList
 {
@@ -52,7 +52,7 @@ internal class CommandList : ICommandList
         ICommand command = Commands.Where(x => x.GetName() == inputCommand).FirstOrDefault()!;
         if (command == null)
         {
-            if(defaultCommand != null)
+            if (defaultCommand != null)
             {
                 defaultCommand.Invoke(parameters);
                 return;

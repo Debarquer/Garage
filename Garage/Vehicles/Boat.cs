@@ -1,4 +1,4 @@
-﻿namespace Garage;
+﻿namespace Garage.Vehicles;
 
 internal class Boat : Vehicle
 {

@@ -1,6 +1,6 @@
 ﻿using Garage.Contracts;
 
-namespace Garage;
+namespace Garage.UserInput;
 
 internal class FlowControlManagerNoMenu : IFlowControlManager
 {
@@ -18,13 +18,13 @@ internal class FlowControlManagerNoMenu : IFlowControlManager
         commandList = new CommandList(new ICommand[]
         {
             new Command(
-            "help", 
-            "help", 
+            "help",
+            "help",
             "Prints help information.",
             PrintHelp
             ),
         },
-        defaultCommand: new Command( 
+        defaultCommand: new Command(
             "router",
             "",
             "",

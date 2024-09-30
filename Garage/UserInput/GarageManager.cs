@@ -1,6 +1,7 @@
 ﻿using Garage.Contracts;
+using Garage.Vehicles;
 
-namespace Garage
+namespace Garage.UserInput
 {
     internal class GarageManager : CommandManager
     {
@@ -39,13 +40,13 @@ namespace Garage
                 ),
                 new Command(
                    "add",
-                   "garage type registration",
+                   "garage type",
                    "Adds a vehicle to the garage. Only unique registrations are allowed.",
                    AddVehicle
                 ),
                 new Command(
                    "remove",
-                   "garage registration",
+                   "garage",
                    "Removes a veicle from the garage.",
                    RemoveVehicle
                 ),
@@ -60,27 +61,38 @@ namespace Garage
         private void PrintTestInfo(string[] parameters) => ui.PrintMessage("GarageManager test");
         private void PrintAllVehicles(string[] parameters) => garageHandler.PrintAllVehicles(parameters[0]);
         private void PrintTypes(string[] parameters) => garageHandler.PrintTypes(parameters[0]);
+
         private void AddVehicle(string[] parameters)
         {
+            ui.PrintMessage($"Please enter the registration:");
+            string registration = Console.ReadLine();
+
             Vehicle v = null;
             switch (parameters[1].ToLower())
             {
                 case "car":
-                    v = new Car(parameters[2]);
+                    v = new Car(registration);
                     break;
                 case "boat":
-                    v = new Boat(parameters[2]);
+                    v = new Boat(registration);
                     break;
                 default:
                     ui.PrintMessage($"AddVehicle error: {parameters[1]} is not a valid vehicle type.");
                     return;
             }
 
-            if(v != null)
+            if (v != null)
             {
                 garageHandler.AddVehicle(v, parameters[0]);
             }
         }
-        private void RemoveVehicle(string[] parameters) => garageHandler.RemoveVehicle(parameters[1], parameters[0]);
+
+        private void RemoveVehicle(string[] parameters)
+        {
+            ui.PrintMessage($"Please enter the registration:");
+            string registration = Console.ReadLine();
+
+            garageHandler.RemoveVehicle(registration, parameters[0]);
+        }
     }
 }
