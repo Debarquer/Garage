@@ -146,5 +146,26 @@ namespace Garage
                 ui.PrintMessage($"{item.Key}: {item.Count()}");
             }
         }
+
+        public void AddGarage(string garage, int capacity)
+        {
+            if (garages.ContainsKey(garage))
+            {
+                ui.PrintMessage($"Garage {garage} already exists!");
+                return;
+            }
+
+            garages[garage] = new Garage<T>(capacity, garage);
+
+            ui.PrintMessage($"Added garage {garage} with capacity {capacity}");
+        }
+
+        public void PrintGarages()
+        {
+            foreach(Garage<T> garage in garages.Values)
+            {
+                ui.PrintMessage($"{garage.Name} Occupancy: {garage.GetAllVehicles().Length}/{garage.Capacity}");
+            }
+        }
     }
 }

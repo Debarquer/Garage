@@ -50,6 +50,18 @@ namespace Garage.UserInput
                    "Removes a veicle from the garage.",
                    RemoveVehicle
                 ),
+                new Command(
+                   "addgarage",
+                   "garage capacity",
+                   "Adds a new garage.",
+                   AddGarage
+                ),
+                new Command(
+                   "printgarages",
+                   "",
+                   "Prints all available garages.",
+                   PrintGarages
+                ),
             });
 
             this.ui = ui;
@@ -94,5 +106,19 @@ namespace Garage.UserInput
 
             garageHandler.RemoveVehicle(registration, parameters[0]);
         }
+
+        private void AddGarage(string[] parameters)
+        {
+            int capacity = 0;
+            if(!int.TryParse(parameters[1], out capacity))
+            {
+                ui.PrintMessage($"{parameters[1]} is not a valid number");
+                return;
+            }
+
+            garageHandler.AddGarage(parameters[0], capacity);
+        }
+
+        private void PrintGarages(string[] parameters) => garageHandler.PrintGarages();
     }
 }
