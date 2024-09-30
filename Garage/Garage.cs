@@ -1,8 +1,9 @@
 ﻿using Garage.Contracts;
+using System.Collections;
 
 namespace Garage;
 
-internal class Garage<T> where T : IVehicle
+internal class Garage<T>: IEnumerable<T> where T : IVehicle
 {
     public int Capacity { get; }
     public string Name { get; }
@@ -112,6 +113,23 @@ internal class Garage<T> where T : IVehicle
             {
                 spots[i] = null;
             }
+        }
+    }
+
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        foreach (GarageSpot<T> spot in spots)
+        {
+            yield return spot.Value;
+        }
+    }
+
+    public IEnumerator<T> GetEnumerator()
+    {
+        foreach (GarageSpot<T> spot in spots)
+        {
+            if(spot != null && spot.Value != null)
+                yield return spot.Value;
         }
     }
 }

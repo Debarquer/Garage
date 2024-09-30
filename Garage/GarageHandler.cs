@@ -139,9 +139,8 @@ namespace Garage
                 return;
             }
 
-            T[] vehicles = garages[garage].GetAllVehicles();
             ui.PrintMessage($"Vehicles in garage {garages[garage].Name}: ");
-            foreach(T vehicle in vehicles)
+            foreach (T vehicle in garages[garage])
             {
                 ui.PrintMessage($"{vehicle.GetType().Name}: {vehicle}");
             }
@@ -201,15 +200,14 @@ namespace Garage
                     (owner == null || owner == vehicle.Owner)) &&
                     (type == null || type.ToLower() == vehicle.GetType().Name.ToLower());
 
-            T[] vehicles = GetAllVehicles(pattern, garage);
-
-            if(vehicles == null || vehicles.Length == 0)
+            garage = garage.ToLower();
+            if (!garages.ContainsKey(garage))
             {
-                ui.PrintMessage($"No vehicles found in garage {garage}");
+                ui.PrintMessage($"Garage: No garage with name {garage} found.");
                 return;
             }
 
-            foreach(T vehicle in vehicles)
+            foreach (T vehicle in garages[garage])
             {
                 ui.PrintMessage(vehicle.ToString());
             }
