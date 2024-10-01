@@ -32,9 +32,9 @@ internal class GarageHandler<T> : IHandler<T> where T : IVehicle
         AddVehicle((T)airplane1, "default");
     }
 
-    public void AddVehicle(T vehicle, string garageName)
-    {
-        if (!ValidateGarage(garageName)) return;
+        public void AddVehicle(T vehicle, string garage)
+        {
+            garage = garage.ToLower();
 
         Garage<T> garage = GetGarage(garageName);
         try
