@@ -10,6 +10,8 @@ internal class GarageHandler<T> : IHandler<T> where T : IVehicle
     //public int Capacity => garage.Capacity;
     IUI ui;
 
+    string savePath = "data/garages";
+
     public GarageHandler(int capacity, IUI ui)
     {
         garages["default"] = new Garage<T>(capacity,"default");
@@ -32,9 +34,9 @@ internal class GarageHandler<T> : IHandler<T> where T : IVehicle
         AddVehicle((T)airplane1, "default");
     }
 
-        public void AddVehicle(T vehicle, string garage)
-        {
-            garage = garage.ToLower();
+    public void AddVehicle(T vehicle, string garageName)
+    {
+        garageName = garageName.ToLower();
 
         Garage<T> garage = GetGarage(garageName);
         try
