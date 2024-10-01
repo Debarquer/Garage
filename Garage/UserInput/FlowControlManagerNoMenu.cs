@@ -19,7 +19,7 @@ internal class FlowControlManagerNoMenu : IFlowControlManager
         {
             new Command(
                 "help",
-                "help",
+                "help ?command",
                 "Prints help information.",
                 PrintHelp
             ),
@@ -70,20 +70,29 @@ internal class FlowControlManagerNoMenu : IFlowControlManager
         }
     }
 
-    private void PrintHelp(string[] p) => commandList.PrintHelp(p.Skip(1).ToArray(), ui);
+    private void PrintHelp(string[] p)
+    {
+        commandList.PrintHelp(p.Skip(1).ToArray(), ui);
+        ui.PrintMessage("Available modules:");
+        foreach(CommandManager manager in managers)
+        {
+            ui.PrintMessage(manager.Name);
+        }
+        ui.PrintMessage("Type module_name help for more information");
+    }
+
     private void Route(string[] p)
     {
         CommandManager manager = managers
             .Where(x => x.Aliases.Contains(p[0]))
             .FirstOrDefault();
 
-        if (manager != null)
-        {
-            manager.HandleInput(p[1], p.Skip(2).ToArray(), ui);
-        }
-        else
+        if (manager == null)
         {
             ui.PrintMessage($"{p[0]} is not a valid command.");
+            return;
         }
+
+        manager.HandleInput(p[1], p.Skip(2).ToArray(), ui);
     }
 }

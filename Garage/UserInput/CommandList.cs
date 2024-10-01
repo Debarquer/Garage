@@ -20,14 +20,14 @@ internal class CommandList : ICommandList
         if (numberOfParameters == 0)
         {
             ui.PrintMessage($"Help:");
-            ui.PrintMessage($"Input command separated by spaces.");
+            ui.PrintMessage($"Input a command separated by spaces.");
             string commands = "";
             foreach (Command command in Commands)
             {
                 commands += $"{command.GetName()}, ";
             }
             ui.PrintMessage($"Available subcommands: {commands}");
-            ui.PrintMessage($"Enter the subcommand followed by the help for a more detailed description and their parameters.");
+            ui.PrintMessage($"Enter the subcommand followed by help for a more detailed description of the command and its parameters.");
         }
         else if (numberOfParameters == 1)
         {

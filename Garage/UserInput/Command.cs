@@ -28,7 +28,6 @@ internal class Command : ICommand
     public void PrintHelp(IUI ui)
     {
         ui.PrintMessage($"{name} help:");
-        string[] parametersArray = parameters.Split(" ");
 
         string parametersString = "";
         if (unlimitedParameters)
@@ -44,6 +43,18 @@ internal class Command : ICommand
             parametersString += $"[{minimumNumberOfParameters}-{maximumNumberOfParameters}] Parameters: ";
         }
 
+        parametersString += GetParametersString();
+
+        ui.PrintMessage(parametersString);
+
+        ui.PrintMessage("");
+        ui.PrintMessage($"Description: {description}");
+    }
+
+    private string GetParametersString()
+    {
+        string parametersString = "";
+        string[] parametersArray = parameters.Split(" ");
         foreach (string parameter in parametersArray)
         {
             if (parameter.StartsWith("?"))
@@ -56,10 +67,7 @@ internal class Command : ICommand
             }
         }
 
-        ui.PrintMessage(parametersString);
-
-        ui.PrintMessage("");
-        ui.PrintMessage($"Description: {description}");
+        return parametersString;
     }
 
     public void Invoke(string[] parameters)
@@ -72,11 +80,11 @@ internal class Command : ICommand
         if (parameters == null && minimumNumberOfParameters > 0 ||
             parameters.Length < minimumNumberOfParameters)
         {
-            throw new ArgumentOutOfRangeException($"Too few parameters. {name} requires at least {minimumNumberOfParameters} parameters.");
+            throw new ArgumentOutOfRangeException($"Too few parameters. {name} requires at least {minimumNumberOfParameters} parameter(s). \nParameters: {GetParametersString()}");
         }
-        else if (parameters.Length > maximumNumberOfParameters)
+        else if (parameters.Length > maximumNumberOfParameters && !unlimitedParameters)
         {
-            throw new ArgumentOutOfRangeException($"Too many parameters. {name} requires no more than {maximumNumberOfParameters} parameters.");
+            throw new ArgumentOutOfRangeException($"Too many parameters. {name} requires no more than {maximumNumberOfParameters} parameter(s). \nParameters: {GetParametersString()}");
         }
 
         return true;

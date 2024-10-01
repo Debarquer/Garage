@@ -40,7 +40,7 @@ namespace Garage.UserInput
                 ),
                 new Command(
                    "printpattern",
-                   "garage ?color ?numberOfWheels ?maxSpeed ?owner ?registration",
+                   "garage ?type ?color ?numberOfWheels ?maxSpeed ?owner ?registration",
                    "Prints all vehicles in garage matching the pattern. Use the pattern type:value.",
                    PrintVehiclesMatchingPattern,
                    true
