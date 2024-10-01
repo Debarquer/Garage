@@ -1,10 +1,13 @@
 ﻿using System.Drawing;
+using System.Text.Json.Serialization;
 
 namespace Garage.Vehicles;
 
 internal class Boat : Vehicle
 {
     public int Length { get; private set; }
+
+    public Boat() { }
 
     public Boat(string registration,
         string color,

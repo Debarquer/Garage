@@ -1,8 +1,13 @@
-﻿namespace Garage.Vehicles;
+﻿using System.Text.Json.Serialization;
+
+namespace Garage.Vehicles;
 
 internal class Car : Vehicle
 {
     public FuelType FuelType { get; private set; }
+    //public string FuelType { get; set; }
+
+    public Car() { }
 
     public Car(string registration,
     string color,

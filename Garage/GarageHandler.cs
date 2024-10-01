@@ -1,5 +1,6 @@
 ﻿using Garage.Contracts;
 using Garage.Vehicles;
+using Newtonsoft.Json;
 
 namespace Garage;
 
@@ -10,7 +11,7 @@ internal class GarageHandler<T> : IHandler<T> where T : IVehicle
     //public int Capacity => garage.Capacity;
     IUI ui;
 
-    string savePath = "data/garages";
+    string savePath = "data\\garages";
 
     public GarageHandler(int capacity, IUI ui)
     {
@@ -18,20 +19,20 @@ internal class GarageHandler<T> : IHandler<T> where T : IVehicle
 
         this.ui = ui;
 
-        IVehicle car1 = new Car("abc 123", "red", 4, 100, "simon", FuelType.gas);
-        AddVehicle((T)car1, "default");
-        IVehicle car2 = new Car("abcd 123", "blue", 4, 100, "simon", FuelType.gas);
-        AddVehicle((T)car2, "default");
-        IVehicle car3 = new Car("abcd 1234", "red", 4, 120, "daniel", FuelType.gas);
-        AddVehicle((T)car3, "default");
-        IVehicle car4 = new Car("abc 1234", "blue", 4, 120, "daniel", FuelType.diesel);
-        AddVehicle((T)car4, "default");
-        IVehicle bus1 = new Bus("DEF 1234", "orange", 4, 80, "anna", 20);
-        AddVehicle((T)bus1, "default");
-        IVehicle bus2 = new Bus("DGH 1234", "purple", 4, 90, "mo",35);
-        AddVehicle((T)bus2, "default");
-        IVehicle airplane1 = new Airplane("IHJ 1234", "white", 4, 600, "peter", 6);
-        AddVehicle((T)airplane1, "default");
+        //IVehicle car1 = new Car("abc 123", "red", 4, 100, "simon", FuelType.gas);
+        //AddVehicle((T)car1, "default");
+        //IVehicle car2 = new Car("abcd 123", "blue", 4, 100, "simon", FuelType.gas);
+        //AddVehicle((T)car2, "default");
+        //IVehicle car3 = new Car("abcd 1234", "red", 4, 120, "daniel", FuelType.gas);
+        //AddVehicle((T)car3, "default");
+        //IVehicle car4 = new Car("abc 1234", "blue", 4, 120, "daniel", FuelType.diesel);
+        //AddVehicle((T)car4, "default");
+        //IVehicle bus1 = new Bus("DEF 1234", "orange", 4, 80, "anna", 20);
+        //AddVehicle((T)bus1, "default");
+        //IVehicle bus2 = new Bus("DGH 1234", "purple", 4, 90, "mo", 35);
+        //AddVehicle((T)bus2, "default");
+        //IVehicle airplane1 = new Airplane("IHJ 1234", "white", 4, 600, "peter", 6);
+        //AddVehicle((T)airplane1, "default");
     }
 
     public void AddVehicle(T vehicle, string garageName)
@@ -198,6 +199,12 @@ internal class GarageHandler<T> : IHandler<T> where T : IVehicle
         return garages[garage];
     }
 
+    private Garage<T> AddOrGet(string name, int capacity)
+    {
+        if(HasGarage(name)) return GetGarage(name);
+        else return AddGarage(name, capacity);
+    }
+
     private bool ValidateGarage(string name)
     {
         name = name.ToLower();
@@ -302,5 +309,165 @@ internal class GarageHandler<T> : IHandler<T> where T : IVehicle
         {
             ui.PrintMessage($"{vehicle.ToString()}");
         }
+    }
+
+    public void SaveAll()
+    {
+        SaveAll(savePath);
+    }
+
+    public void SaveAll(string path)
+    {
+        try
+        {
+            foreach (Garage<T> garage in garages.Values)
+            {
+                Save(garage);
+            }
+        }
+        catch(Exception ex)
+        {
+            ui.PrintMessage(ex.Message);
+        }
+    }
+
+    private void Save(Garage<T> garage)
+    {
+        string filePath = Path.Combine(savePath, garage.Name + ".txt");
+        if (!File.Exists(filePath))
+        {
+            File.Create(filePath);
+        }
+
+        using (StreamWriter outputFile = new StreamWriter(filePath))
+        {
+            outputFile.WriteLine(garage.Capacity.ToString());
+            foreach(T v in garage)
+            {
+                SerializeJson(outputFile, v);
+                //SerializeReflection(outputFile, v);
+            }
+        }
+
+        ui.PrintMessage($"Saved {garage.Name} to {filePath}");
+    }
+
+    private static void SerializeJson(StreamWriter outputFile, T v)
+    {
+        JsonSerializerSettings settings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All };
+        string s = JsonConvert.SerializeObject(v, settings);
+        outputFile.WriteLine(s);
+    }
+
+    private static void SerializeReflection(StreamWriter outputFile, IVehicle v)
+    {
+        string s = "";
+        s += $"type:{v.GetType().Name};";
+        foreach(var prop in v.GetType().GetProperties())
+        {
+            s += $"{prop.Name}:{prop.GetValue(v)};";
+        }
+        outputFile.WriteLine(s);
+    }
+
+    public void LoadAll()
+    {
+        LoadAll(savePath);
+    }
+
+    public void LoadAll(string path)
+    {
+        try
+        {
+            foreach(string f in Directory.GetFiles(savePath))
+            {
+                Load(f);
+            }
+        }
+        catch (Exception ex)
+        {
+            ui.PrintMessage(ex.Message);
+        }
+    }
+
+    private void Load(string filePath)
+    {
+        using(StreamReader inputStreamReader = new StreamReader(filePath))
+        {
+            string line = inputStreamReader.ReadLine();
+            if (!int.TryParse(line, out int capacity))
+            {
+                ui.PrintMessage($"Failed to load {filePath}: invalid capacity");
+                return;
+            }
+
+            Garage<IVehicle> garage = AddOrGet(Path.GetFileNameWithoutExtension(filePath), capacity) as Garage<IVehicle>;
+            while (!inputStreamReader.EndOfStream)
+            {
+                line = inputStreamReader.ReadLine();
+                JsonSerializerSettings settings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All };
+                IVehicle vehicle = JsonConvert.DeserializeObject<IVehicle>(line, settings);
+                //IVehicle v = DeserializeReflection(line);
+                garage.AddVehicle(vehicle);
+                ui.PrintMessage($"Loaded {vehicle.Registration}");
+            }
+        }
+    }
+
+    private IVehicle DeserializeReflection(string s)
+    {
+        string[] splitA = s.Split(';');
+
+        string type = splitA[0].Split(':')[1];
+        IVehicle v = null;
+
+        switch (type)
+        {
+            case "Airplane":
+                v = new Airplane();
+                break;
+            case "Boat":
+                v = new Boat();
+                break;
+            case "Bus":
+                v = new Bus();
+                break;
+            case "Car":
+                v = new Car();
+                break;
+            case "Motorcycle":
+                v = new Motorcycle();
+                break;
+        }
+
+        for (int i = 1; i < splitA.Length; i++)
+        {
+            string f = splitA[i];
+            string[] splitB = f.Split(":");
+            if(splitB.Length < 2)
+            {
+                ui.PrintMessage("Outside bounds");
+                continue;
+            }
+            string name = splitB[0];
+            string value = splitB[1];
+
+            foreach (var prop in v.GetType().GetProperties())
+            {
+                if (prop.Name == name)
+                {
+                    if(prop.PropertyType.Name == "Int32")
+                    {
+                        prop.SetValue(v, int.Parse(value), null);
+                    }
+                    else
+                    {
+                        prop.SetValue(v, value as System.String, null);
+                    }
+                }
+            }
+        }
+
+        return v;
     }
 }

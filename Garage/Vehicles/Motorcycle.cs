@@ -1,4 +1,5 @@
 ﻿using System.Drawing;
+using System.Text.Json.Serialization;
 
 namespace Garage.Vehicles;
 
@@ -6,6 +7,8 @@ internal class Motorcycle : Vehicle
 {
     public int CylinderVolume { get; private set; }
 
+    public Motorcycle() { }
+    
     public Motorcycle(string registration,
     string color,
     int numberOfWheels,

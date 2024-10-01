@@ -69,6 +69,18 @@ namespace Garage.UserInput
                    "Prints all available garages.",
                    PrintGarages
                 ),
+                new Command(
+                   "saveall",
+                   "?path",
+                   "Saves all garages.",
+                   SaveAll
+                ),
+                new Command(
+                   "loadall",
+                   "?path",
+                   "Loads all garages.",
+                   LoadAll
+                ),
             });
 
             this.ui = ui;
@@ -170,5 +182,28 @@ namespace Garage.UserInput
         }
 
         private void PrintGarages(string[] parameters) => garageHandler.PrintGarages();
+
+        private void SaveAll(string[] parameters)
+        {
+            if(parameters.Length == 0)
+            {
+                garageHandler.SaveAll();
+            }
+            else if(parameters.Length == 1)
+            {
+                garageHandler.SaveAll(parameters[0]);
+            }
+        }
+        private void LoadAll(string[] parameters)
+        {
+            if (parameters.Length == 0)
+            {
+                garageHandler.LoadAll();
+            }
+            else if (parameters.Length == 1)
+            {
+                garageHandler.LoadAll(parameters[0]);
+            }
+        }
     }
 }
