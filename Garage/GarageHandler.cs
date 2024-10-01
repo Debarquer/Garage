@@ -230,6 +230,19 @@ internal class GarageHandler<T> : IHandler<T> where T : IVehicle
         }
     }
 
+    Dictionary<string, Func<int, int, bool>> opToFunc = new Dictionary<string, Func<int, int, bool>>
+    {
+        {"=", (int a, int b) => {
+            return a == b;
+        } },
+        {">", (int a, int b) => {
+            return a > b;
+        } },
+        {"<", (int a, int b) => {
+            return a < b;
+        } }
+    };
+
     public void PrintVehiclesMatchingPattern(string garageName, string[] parameters)
     {
         if (!ValidateGarage(garageName)) return;
@@ -252,7 +265,17 @@ internal class GarageHandler<T> : IHandler<T> where T : IVehicle
             matches = true;
             foreach(string s in parameters)
             {
-                string[] parameterSplit = s.Split(':');
+                string op = "";
+                foreach(string ops in opToFunc.Keys)
+                {
+                    if (s.Contains(ops))
+                    {
+                        op = ops;
+                        break;
+                    }
+                }
+
+                string[] parameterSplit = s.Split(op);
                 if (parameterSplit.Length != 2)
                 {
                     ui.PrintMessage("Invalid paramter");
@@ -284,11 +307,23 @@ internal class GarageHandler<T> : IHandler<T> where T : IVehicle
                     if (prop.Name.ToLower() == parameterName.ToLower())
                     {
                         foundProp = true;
-                        if (prop.GetValue(vehicle).ToString() != parameterValue)
+                        if(prop.PropertyType.Name == "Int32")
                         {
-                            matches = false;
-                            break;
+                            int a = int.Parse(parameterValue);
+                            if (!opToFunc[op]((int)prop.GetValue(vehicle), a))
+                            {
+                                matches = false;
+                                break;
+                            }
                         }
+                        else {
+                            if (prop.GetValue(vehicle).ToString() != parameterValue)
+                            {
+                                matches = false;
+                                break;
+                            }
+                        }
+
                     }
                 }
                 if (!foundProp)
