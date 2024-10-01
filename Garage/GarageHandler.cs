@@ -1,6 +1,5 @@
 ﻿using Garage.Contracts;
 using Garage.Vehicles;
-using System.Numerics;
 
 namespace Garage
 {
@@ -33,13 +32,14 @@ namespace Garage
             AddVehicle((T)airplane1, "default");
         }
 
-        public void AddVehicle(T vehicle, string garage)
+        public void AddVehicle(T vehicle, string garageName)
         {
-            garage = garage.ToLower();
+            if (!ValidateGarage(garageName)) return;
 
+            Garage<T> garage = GetGarage(garageName);
             try
             {
-                garages[garage].AddVehicle(vehicle);
+                garage.AddVehicle(vehicle);
             }
             catch (KeyNotFoundException ex)
             {
@@ -55,54 +55,32 @@ namespace Garage
             ui.PrintMessage($"Garage: Added vehicle with registration {vehicle.Registration}.");
         }
 
-        public T[] GetAllVehicles(string garage)
+        private T[] GetAllVehicles(Garage<T> garage) => garage.GetAllVehicles();
+
+        /// <summary>
+        /// Returns a vehicle matching the registration.
+        /// </summary>
+        /// <param name="registration"></param>
+        /// <param name="garageName"></param>
+        /// <returns>The vehicle matching the registration.</returns>
+        /// <exception cref="Exception">If no garage is found with that name.</exception>
+        public T GetVehicle(string registration, string garageName)
         {
-            garage = garage.ToLower();
-
-            if (!garages.ContainsKey(garage))
+            Garage<T> garage;
+            try
             {
-                ui.PrintMessage($"Garage: No garage with name {garage} found.");
-                return default;
+                garage = GetGarage(garageName);
+
+            }
+            catch(Exception ex)
+            {
+                throw new Exception(ex.Message);
             }
 
-            return garages[garage].GetAllVehicles();
-        }
-
-        public T[] GetAllVehicles(Func<T, bool> pattern, string garage)
-        {
-            garage = garage.ToLower();
-
-            if (!garages.ContainsKey(garage))
-            {
-                ui.PrintMessage($"Garage: No garage with name {garage} found.");
-                return default;
-            }
-
-            T[] result = garages[garage].GetAllVehicles(pattern);
-            if(result  == null)
-            {
-                ui.PrintMessage("No vehicles found.");
-                return [];
-            }
-            else
-            {
-                return result;
-            }
-        }
-
-        public T GetVehicle(string registration, string garage)
-        {
             registration = registration.ToLower();
-            garage = garage.ToLower();
 
-            if (!garages.ContainsKey(garage))
-            {
-                ui.PrintMessage($"Garage: No garage with name {garage} found.");
-                return default;
-            }
-
-            T vehicle = garages[garage].GetVehicle(registration);
-            if(vehicle == null)
+            T vehicle = garage.GetVehicle(registration);
+            if (vehicle == null)
             {
                 ui.PrintMessage("No vehicle found.");
                 return default;
@@ -111,16 +89,39 @@ namespace Garage
             return vehicle;
         }
 
-        public bool HasVehicle(string registration, string garage) => garages[garage.ToLower()].HasVehicle(registration.ToLower());
-
-        public void RemoveVehicle(string registration, string garage)
+        /// <summary>
+        /// Returns true if any vehicles in the garage matches the registration, otherwise returns false.
+        /// </summary>
+        /// <param name="registration"></param>
+        /// <param name="garageName"></param>
+        /// <returns>If any vehicles in the garage matches the registration.</returns>
+        /// <exception cref="Exception">If no garage is found with that name.</exception>
+        public bool HasVehicle(string registration, string garageName)
         {
+            Garage<T> garage;
+            try
+            {
+                garage = GetGarage(garageName);
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+
+            return garage.HasVehicle(registration.ToLower());
+        }
+
+        public void RemoveVehicle(string registration, string garageName)
+        {
+            if (!ValidateGarage(garageName)) return;
+
+            Garage<T> garage = GetGarage(garageName);
             registration = registration.ToLower();
-            garage = garage.ToLower();
 
             try
             {
-                garages[garage].RemoveVehicle(registration);
+                garage.RemoveVehicle(registration);
             }
             catch (ArgumentOutOfRangeException ex)
             {
@@ -136,25 +137,26 @@ namespace Garage
             ui.PrintMessage($"Garage: Removed vehicle with registration {registration}.");
         }
 
-        public void PrintAllVehicles(string garage)
+        public void PrintAllVehicles(string garageName)
         {
-            garage = garage.ToLower();
-            if (!garages.ContainsKey(garage))
-            {
-                ui.PrintMessage($"Garage: No garage with name {garage} found.");
-                return;
-            }
+            if (!ValidateGarage(garageName)) return;
 
-            ui.PrintMessage($"Vehicles in garage {garages[garage].Name}: ");
-            foreach (T vehicle in garages[garage])
+            Garage<T> garage = GetGarage(garageName);
+
+            ui.PrintMessage($"Vehicles in garage {garage.Name}: ");
+            foreach (T vehicle in garage)
             {
                 ui.PrintMessage($"{vehicle.GetType().Name}: {vehicle}");
             }
         }
 
-        public void PrintTypes(string garage)
+        public void PrintTypes(string garageName)
         {
-            T[] vehicles = GetAllVehicles(garage.ToLower());
+            if (!ValidateGarage(garageName)) return;
+
+            Garage<T> garage = GetGarage(garageName);
+
+            T[] vehicles = GetAllVehicles(garage);
             IEnumerable<IGrouping<Type, T>> grouping = vehicles.GroupBy(x => x.GetType());
 
             if(grouping.Count() == 0) 
@@ -169,17 +171,46 @@ namespace Garage
             }
         }
 
-        public void AddGarage(string garage, int capacity)
+        public Garage<T> AddGarage(string name, int capacity)
         {
-            if (garages.ContainsKey(garage))
+            if (garages.ContainsKey(name))
             {
-                ui.PrintMessage($"Garage {garage} already exists!");
-                return;
+                ui.PrintMessage($"Garage {name} already exists!");
+                return garages[name];
             }
 
-            garages[garage] = new Garage<T>(capacity, garage);
+            garages[name] = new Garage<T>(capacity, name);
 
-            ui.PrintMessage($"Added garage {garage} with capacity {capacity}");
+            ui.PrintMessage($"Added garage {name} with capacity {capacity}");
+            return garages[name];
+        }
+
+        public Garage<T> GetGarage(string garage)
+        {
+            garage = garage.ToLower();
+            if (!garages.ContainsKey(garage))
+            {
+                throw new IndexOutOfRangeException($"Garage: No garage with name {garage} found.");
+            }
+
+            return garages[garage];
+        }
+
+        private bool ValidateGarage(string name)
+        {
+            name = name.ToLower();
+            if (!HasGarage(name))
+            {
+                ui.PrintMessage($"Garage: No garage with name {name} found.");
+                return false;
+            }
+
+            return true;
+        }
+
+        public bool HasGarage(string name)
+        {
+            return garages.ContainsKey(name);
         }
 
         public void PrintGarages()
@@ -190,8 +221,11 @@ namespace Garage
             }
         }
 
-        public void PrintVehiclesMatchingPattern(string garage, string[] parameters)
+        public void PrintVehiclesMatchingPattern(string garageName, string[] parameters)
         {
+            if (!ValidateGarage(garageName)) return;
+
+            Garage<T> garage = GetGarage(garageName);
             T[] v = GetAllVehicles(garage);
 
             if(v == null || v.Length == 0)
@@ -266,6 +300,6 @@ namespace Garage
             {
                 ui.PrintMessage($"{vehicle.ToString()}");
             }
-        }
+        }  
     }
 }
