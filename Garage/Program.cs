@@ -4,6 +4,13 @@ internal class Program
 {
     private static void Main(string[] args)
     {
-        FlowControlManagerFactory.Create().ManageInput();
+        try
+        {
+            FlowControlManagerFactory.Create().ManageInput();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
     }
 }

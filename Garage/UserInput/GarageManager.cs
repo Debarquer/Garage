@@ -1,8 +1,5 @@
 ﻿using Garage.Contracts;
 using Garage.Vehicles;
-using System.Diagnostics.Metrics;
-using System.Drawing;
-using System.Numerics;
 
 namespace Garage.UserInput
 {

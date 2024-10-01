@@ -17,7 +17,6 @@ internal class FlowControlManagerFactory : IFlowControlManagerFactory
         {
         };
 
-
         IFlowControlManager flowControlManager = new FlowControlManagerNoMenu(managers, ui, initialization);
         return flowControlManager;
     }
