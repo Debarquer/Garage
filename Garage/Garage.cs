@@ -116,6 +116,14 @@ internal class Garage<T>: IEnumerable<T> where T : IVehicle
         }
     }
 
+    /// <summary>
+    /// Removes all vehicles from the garage.
+    /// </summary>
+    public void Clear()
+    {
+        spots = new GarageSpot<T>[Capacity];
+    }
+
     IEnumerator IEnumerable.GetEnumerator()
     {
         foreach (GarageSpot<T> spot in spots)

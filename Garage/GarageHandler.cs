@@ -234,6 +234,15 @@ internal class GarageHandler<T> : IHandler<T> where T : IVehicle
         }
     }
 
+    public void ClearGarage(string garageName)
+    {
+        if (!ValidateGarage(garageName)) return;
+
+        Garage<T> garage = GetGarage(garageName);
+
+        garage.Clear();
+    }
+
     Dictionary<string, Func<int, int, bool>> opToFunc = new()
     {
         {"=", (int a, int b) => {

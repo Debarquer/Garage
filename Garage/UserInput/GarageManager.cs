@@ -1,5 +1,6 @@
 ﻿using Garage.Contracts;
 using Garage.Vehicles;
+using System.Reflection.Metadata.Ecma335;
 
 namespace Garage.UserInput
 {
@@ -62,6 +63,12 @@ namespace Garage.UserInput
                    "garage capacity",
                    "Adds a new garage.",
                    AddGarage
+                ),
+                new Command(
+                   "cleargarage",
+                   "garage",
+                   "Empties a garage.",
+                   EmptyGarage
                 ),
                 new Command(
                    "printgarages",
@@ -190,6 +197,27 @@ namespace Garage.UserInput
             }
 
             garageHandler.AddGarage(parameters[0], capacity);
+        }
+
+        private void EmptyGarage(string[] parameters)
+        {
+            string input = Utilities.PromptUserForValidInput(
+                $"You are about to remove all vehicles from garage {parameters[0]}. Are you sure? (yes/no)",
+                (string s) => s == "yes" || s == "no", 
+                ui);
+
+            if(input == "yes")
+            {
+                garageHandler.ClearGarage(parameters[0]);
+            }
+            else if(input == "no")
+            {
+                ui.PrintMessage("Action cancelled");
+            }
+            else
+            {
+                ui.PrintMessage("Invalid input");
+            }
         }
 
         private void PrintGarages(string[] parameters) => garageHandler.PrintGarages();
