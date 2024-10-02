@@ -114,63 +114,36 @@ internal class GarageManager : CommandManager
             return;
         }
 
+        string availableTypes = VehicleUtility.GetAvailableVehicleStrings();
+        string typeName = Utilities.PromptUserForValidInput($"Please enter the vehicle type ({availableTypes}):",
+            VehicleUtility.ValidateType,
+            ui,
+            $"Invalid type."
+            );
+
+        Type type = VehicleUtility.GetType(typeName);
+        if (!VehicleUtility.IsIVehicle(type))
+        {
+            ui.PrintMessage(("Invalid type"));
+            return;
+        }
+
         string color = Utilities.PromptUserForValidString("Please enter a color:", ui);
         int numberOfWheels = Utilities.PromptUserForValidNumber("Please enter the number of wheels:", ui);
         int maxSpeed = Utilities.PromptUserForValidNumber("Please enter the max speed:", ui);
         string owner = Utilities.PromptUserForValidString("Please enter the owners first name:", ui);
         string registration = Utilities.PromptUserForValidInput("Please enter the registration:", (string s) => s.Length > 0, ui);
 
-        IEnumerable<Type> types = Assembly.Load("Garage").GetTypes().Where(t => t.Namespace == "Garage.Vehicles.Vehicles");
-        string availableTypes = "";
-        foreach (var availableType in types)
-        {
-            if (availableType.Name.ToLower() != "<>c")
-                availableTypes += availableType.Name.ToLower() + ", ";
-        }
-        string typeName = Utilities.PromptUserForValidInput($"Please enter the vehicle type ({availableTypes}):",
-            (string s) =>
-            {
-                foreach(Type? type in types)
-                {
-                    var typeNameLower = type.Name.ToLower();
-                    if(s.ToLower() == typeNameLower)
-                    {
-                        return true;
-                    }
-                }
-                return false;
-            },
-            ui,
-            $"Invalid type."
-            );
+        IVehicle vehicle = (IVehicle?)Activator.CreateInstance(type, registration, color, numberOfWheels, maxSpeed, owner);
 
-        IVehicle v = null;
-
-        TextInfo myTI = new CultureInfo("en-US", false).TextInfo;
-        typeName = myTI.ToTitleCase(typeName);
-        Type type = Assembly.Load("Garage").GetTypes().First(t => t.Name == typeName);
-
-        TypeFilter typeFilter = new TypeFilter((Type typeObj, Object criteria) =>
+        if (vehicle == null)
         {
-            return typeObj.ToString() == criteria.ToString();
-        });
-
-        bool isIVehicle = type.IsAssignableTo(typeof(IVehicle));
-        if (isIVehicle)
-        {
-            v = (IVehicle?)Activator.CreateInstance(type, registration, color, numberOfWheels, maxSpeed, owner);
-            v.PromptUserForAdditionalData(ui);
-        }
-        else
-        {
-            ui.PrintMessage(("Invalid type"));
+            ui.PrintMessage("Failed to instantiate vehicle");
             return;
         }
 
-        if (v != null)
-        {
-            garageHandler.AddVehicle(v, parameters[0]);
-        }
+        vehicle.PromptUserForAdditionalData(ui);
+        garageHandler.AddVehicle(vehicle, parameters[0]);
     }
 
     private void RemoveVehicle(string[] parameters)
