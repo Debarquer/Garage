@@ -6,12 +6,8 @@ namespace Garage;
 
 internal class GarageHandler<T> : IHandler<T> where T : IVehicle
 {
-    //private Garage<T> garage;
     private Dictionary<string, Garage<T>> garages = [];
-    //public int Capacity => garage.Capacity;
     IUI ui;
-
-    string savePath = "data\\garages";
 
     public GarageHandler(int capacity, IUI ui)
     {
@@ -230,7 +226,7 @@ internal class GarageHandler<T> : IHandler<T> where T : IVehicle
         }
     }
 
-    Dictionary<string, Func<int, int, bool>> opToFunc = new Dictionary<string, Func<int, int, bool>>
+    Dictionary<string, Func<int, int, bool>> opToFunc = new()
     {
         {"=", (int a, int b) => {
             return a == b;
@@ -348,7 +344,7 @@ internal class GarageHandler<T> : IHandler<T> where T : IVehicle
 
     public void SaveAll()
     {
-        SaveAll(savePath);
+        SaveAll(Directories.SavePath);
     }
 
     public void SaveAll(string path)
@@ -368,7 +364,7 @@ internal class GarageHandler<T> : IHandler<T> where T : IVehicle
 
     private void Save(Garage<T> garage)
     {
-        string filePath = Path.Combine(savePath, garage.Name + ".txt");
+        string filePath = Path.Combine(Directories.SavePath, garage.Name + ".txt");
         if (!File.Exists(filePath))
         {
             File.Create(filePath);
@@ -407,14 +403,14 @@ internal class GarageHandler<T> : IHandler<T> where T : IVehicle
 
     public void LoadAll()
     {
-        LoadAll(savePath);
+        LoadAll(Directories.SavePath);
     }
 
     public void LoadAll(string path)
     {
         try
         {
-            foreach(string f in Directory.GetFiles(savePath))
+            foreach(string f in Directory.GetFiles(Directories.SavePath))
             {
                 Load(f);
             }

@@ -1,4 +1,6 @@
-﻿using Garage.UserInput;
+﻿using Garage;
+using Garage.Contracts;
+using Garage.UserInput;
 
 internal class Program
 {
@@ -6,6 +8,9 @@ internal class Program
     {
         try
         {
+            IConfig config = Config.LoadConfig(Directories.ConfigPath);
+            Directories.Configure(config);
+
             FlowControlManagerFactory.Create().ManageInput();
         }
         catch (Exception ex)
