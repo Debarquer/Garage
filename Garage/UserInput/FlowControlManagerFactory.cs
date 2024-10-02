@@ -10,7 +10,7 @@ internal class FlowControlManagerFactory : IFlowControlManagerFactory
 
         CommandManager[] managers =
         {
-            new GarageManager(ui),
+            new GarageManager(ui, new GarageHandler<IVehicle>(ui)),
             new ConfigManager(ui)
         };
 

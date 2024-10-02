@@ -9,4 +9,6 @@ internal interface IVehicle
     public int NumberOfWheels { get; }
     public int MaxSpeed { get; }
     public string Owner { get; }
+
+    public void PromptUserForAdditionalData(IUI ui);  
 }

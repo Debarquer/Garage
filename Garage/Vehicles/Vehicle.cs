@@ -30,6 +30,8 @@ internal abstract class Vehicle : IVehicle
         Owner = owner;
     }
 
+    public abstract void PromptUserForAdditionalData(IUI ui);
+
     public override string ToString()
     {
         return $"{Registration}: {Color} {NumberOfWheels} wheels Max {MaxSpeed}kmph Owner: {Owner}";

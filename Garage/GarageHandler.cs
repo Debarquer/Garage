@@ -1,5 +1,6 @@
 ﻿using Garage.Contracts;
 using Garage.Vehicles;
+using Garage.Vehicles.Vehicles;
 using Newtonsoft.Json;
 
 namespace Garage;
@@ -9,9 +10,9 @@ internal class GarageHandler<T> : IHandler<T> where T : IVehicle
     private Dictionary<string, Garage<T>> garages = [];
     IUI ui;
 
-    public GarageHandler(int capacity, IUI ui)
+    public GarageHandler(IUI ui)
     {
-        garages["default"] = new Garage<T>(capacity,"default");
+        //garages["default"] = new Garage<T>(100, "default");
 
         this.ui = ui;
 
@@ -241,6 +242,7 @@ internal class GarageHandler<T> : IHandler<T> where T : IVehicle
         Garage<T> garage = GetGarage(garageName);
 
         garage.Clear();
+        ui.PrintMessage($"Garage {garageName} cleared");
     }
 
     Dictionary<string, Func<int, int, bool>> opToFunc = new()
