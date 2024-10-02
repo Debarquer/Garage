@@ -11,8 +11,8 @@ internal class Config : IConfig
     public static void SaveConfig(string path, string dataFolder, string garagesSaveFolder)
     {
         IConfig config = new Config();
-        config.GaragesSaveFolder = dataFolder;
-        config.DataFolder = garagesSaveFolder;
+        config.DataFolder = dataFolder;
+        config.GaragesSaveFolder = garagesSaveFolder;
         using (StreamWriter outputFile = new StreamWriter(path))
         {
             JsonSerializerSettings settings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All };

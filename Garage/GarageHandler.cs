@@ -367,7 +367,8 @@ internal class GarageHandler<T> : IHandler<T> where T : IVehicle
         string filePath = Path.Combine(Directories.SavePath, garage.Name + ".txt");
         if (!File.Exists(filePath))
         {
-            File.Create(filePath);
+            var v = File.Create(filePath);
+            v.Close();
         }
 
         using (StreamWriter outputFile = new StreamWriter(filePath))
