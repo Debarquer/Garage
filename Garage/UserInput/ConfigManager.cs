@@ -37,24 +37,25 @@ namespace Garage.UserInput
 
         private void SaveConfig(string[] parameters)
         {
+            IConfig config = new Config();
             string path = Directories.ConfigPath;
-            string dataFolder = Directories.DataFolder;
-            string garagesFolder = Directories.GaragesFolder;
+            
+            config = Directories.SetConfigData(config);
 
             if(parameters.Length > 0)
             {
-                dataFolder = parameters[0];
+                config.DataFolder = parameters[0];
             }
             if(parameters.Length > 1)
             {
-                garagesFolder = parameters[1];
+                config.GaragesSaveFolder = parameters[1];
             }
             if(parameters.Length > 2)
             {
                 path = parameters[2];
             }
 
-            Config.SaveConfig(path, dataFolder, garagesFolder);
+            config.SaveConfig(path);
 
             ui.PrintMessage($"New config saved at {path}");
         }

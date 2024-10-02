@@ -8,11 +8,9 @@ internal class Config : IConfig
     public string DataFolder { get; set; }
     public string GaragesSaveFolder { get; set; }
 
-    public static void SaveConfig(string path, string dataFolder, string garagesSaveFolder)
+    public void SaveConfig(string path)
     {
         IConfig config = new Config();
-        config.DataFolder = dataFolder;
-        config.GaragesSaveFolder = garagesSaveFolder;
         using (StreamWriter outputFile = new StreamWriter(path))
         {
             JsonSerializerSettings settings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All };

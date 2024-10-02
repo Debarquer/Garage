@@ -28,7 +28,7 @@ namespace Garage.UserInput
                 ),
                 new Command(
                    "print",
-                   "garage",
+                   "?garage",
                    "Prints all vehicles in garage.",
                    PrintAllVehicles
                 ),
@@ -70,16 +70,16 @@ namespace Garage.UserInput
                    PrintGarages
                 ),
                 new Command(
-                   "saveall",
+                   "save",
                    "?path",
                    "Saves all garages.",
-                   SaveAll
+                   Save
                 ),
                 new Command(
-                   "loadall",
+                   "load",
                    "?path",
                    "Loads all garages.",
-                   LoadAll
+                   Load
                 ),
             });
 
@@ -90,7 +90,18 @@ namespace Garage.UserInput
 
         private void Help(string[] parameters) => CommandList.PrintHelp(parameters, ui);
         private void PrintTestInfo(string[] parameters) => ui.PrintMessage("GarageManager test");
-        private void PrintAllVehicles(string[] parameters) => garageHandler.PrintAllVehicles(parameters[0]);
+        private void PrintAllVehicles(string[] parameters)
+        {
+            if(parameters.Length > 0)
+            {
+                garageHandler.PrintAllVehicles(parameters[0]);
+            }
+            else
+            {
+                garageHandler.PrintAllVehicles();
+            }
+        }
+
         private void PrintTypes(string[] parameters) => garageHandler.PrintTypes(parameters[0]);
         private void PrintVehiclesMatchingPattern(string[] parameters) => garageHandler.PrintVehiclesMatchingPattern(parameters[0], parameters.Skip(1).ToArray());
 
@@ -183,7 +194,7 @@ namespace Garage.UserInput
 
         private void PrintGarages(string[] parameters) => garageHandler.PrintGarages();
 
-        private void SaveAll(string[] parameters)
+        private void Save(string[] parameters)
         {
             if(parameters.Length == 0)
             {
@@ -191,10 +202,10 @@ namespace Garage.UserInput
             }
             else if(parameters.Length == 1)
             {
-                garageHandler.SaveAll(parameters[0]);
+                garageHandler.Save(parameters[0]);
             }
         }
-        private void LoadAll(string[] parameters)
+        private void Load(string[] parameters)
         {
             if (parameters.Length == 0)
             {
@@ -202,7 +213,7 @@ namespace Garage.UserInput
             }
             else if (parameters.Length == 1)
             {
-                garageHandler.LoadAll(parameters[0]);
+                garageHandler.Load(Path.Combine(Directories.SavePath, parameters[0]));
             }
         }
     }

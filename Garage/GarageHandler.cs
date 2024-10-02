@@ -136,6 +136,14 @@ internal class GarageHandler<T> : IHandler<T> where T : IVehicle
         ui.PrintMessage($"Garage: Removed vehicle with registration {registration}.");
     }
 
+    public void PrintAllVehicles()
+    {
+        foreach(Garage<T> garage in garages.Values)
+        {
+            PrintAllVehicles(garage.Name);
+        }
+    }
+
     public void PrintAllVehicles(string garageName)
     {
         if (!ValidateGarage(garageName)) return;
@@ -362,7 +370,15 @@ internal class GarageHandler<T> : IHandler<T> where T : IVehicle
         }
     }
 
-    private void Save(Garage<T> garage)
+    public void Save(string garageName)
+    {
+        if (!ValidateGarage(garageName)) return;
+
+        Garage<T> garage = GetGarage(garageName);
+        Save(garage);
+    }
+
+    public void Save(Garage<T> garage)
     {
         string filePath = Path.Combine(Directories.SavePath, garage.Name + ".txt");
         if (!File.Exists(filePath))
@@ -422,27 +438,34 @@ internal class GarageHandler<T> : IHandler<T> where T : IVehicle
         }
     }
 
-    private void Load(string filePath)
+    public void Load(string filePath)
     {
-        using(StreamReader inputStreamReader = new StreamReader(filePath))
+        try
         {
-            string line = inputStreamReader.ReadLine();
-            if (!int.TryParse(line, out int capacity))
+            using (StreamReader inputStreamReader = new StreamReader(filePath))
             {
-                ui.PrintMessage($"Failed to load {filePath}: invalid capacity");
-                return;
-            }
+                string line = inputStreamReader.ReadLine();
+                if (!int.TryParse(line, out int capacity))
+                {
+                    ui.PrintMessage($"Failed to load {filePath}: invalid capacity");
+                    return;
+                }
 
-            Garage<IVehicle> garage = AddOrGet(Path.GetFileNameWithoutExtension(filePath), capacity) as Garage<IVehicle>;
-            while (!inputStreamReader.EndOfStream)
-            {
-                line = inputStreamReader.ReadLine();
-                JsonSerializerSettings settings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All };
-                IVehicle vehicle = JsonConvert.DeserializeObject<IVehicle>(line, settings);
-                //IVehicle v = DeserializeReflection(line);
-                garage.AddVehicle(vehicle);
-                ui.PrintMessage($"Loaded {vehicle.Registration}");
+                Garage<IVehicle> garage = AddOrGet(Path.GetFileNameWithoutExtension(filePath), capacity) as Garage<IVehicle>;
+                while (!inputStreamReader.EndOfStream)
+                {
+                    line = inputStreamReader.ReadLine();
+                    JsonSerializerSettings settings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All };
+                    IVehicle vehicle = JsonConvert.DeserializeObject<IVehicle>(line, settings);
+                    //IVehicle v = DeserializeReflection(line);
+                    garage.AddVehicle(vehicle);
+                    ui.PrintMessage($"Loaded {vehicle.Registration}");
+                }
             }
+        }
+        catch(Exception ex)
+        {
+            ui.PrintMessage(ex.Message);
         }
     }
 
