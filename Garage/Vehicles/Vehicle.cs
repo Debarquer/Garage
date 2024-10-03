@@ -49,8 +49,13 @@ public abstract class Vehicle : IVehicle
         string color,
         int numberOfWheels,
         int maxSpeed,
-        string owner) 
-    {  
+        string owner)
+    {
+        SetData(registration, color, numberOfWheels, maxSpeed, owner);
+    }
+
+    protected void SetData(string registration, string color, int numberOfWheels, int maxSpeed, string owner)
+    {
         Registration = registration;
         Color = color;
         NumberOfWheels = numberOfWheels;

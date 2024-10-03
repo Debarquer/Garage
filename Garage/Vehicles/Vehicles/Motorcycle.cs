@@ -24,9 +24,10 @@ internal class Motorcycle : Vehicle
     string color,
     int numberOfWheels,
     int maxSpeed,
-    string owner) : base(registration, color, numberOfWheels, maxSpeed, owner)
+    string owner) : base()
     {
         Data = new MotorcycleData();
+        SetData(registration, color, numberOfWheels, maxSpeed, owner);
     }
 
     public Motorcycle(string registration,
@@ -34,10 +35,10 @@ internal class Motorcycle : Vehicle
         int numberOfWheels,
         int maxSpeed,
         string owner,
-        int cylinderVolume) : base(registration, color, numberOfWheels, maxSpeed, owner)
+        int cylinderVolume) : base()
     {
         Data = new MotorcycleData();
-
+        SetData(registration, color, numberOfWheels, maxSpeed, owner);
         CylinderVolume = cylinderVolume;
     }
 

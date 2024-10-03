@@ -24,9 +24,10 @@ public class Car : Vehicle
         string color,
         int numberOfWheels,
         int maxSpeed,
-        string owner) : base(registration, color, numberOfWheels, maxSpeed, owner)
+        string owner) : base()
     {
         Data = new CarData();
+        SetData(registration, color, numberOfWheels, maxSpeed, owner);
     }
 
     public Car(string registration,
@@ -34,10 +35,10 @@ public class Car : Vehicle
         int numberOfWheels,
         int maxSpeed,
         string owner,
-        FuelType fuelType) : base(registration, color, numberOfWheels, maxSpeed, owner)
+        FuelType fuelType) : base()
     {
         Data = new CarData();
-
+        SetData(registration, color, numberOfWheels, maxSpeed, owner);
         FuelType = fuelType;
     }
 

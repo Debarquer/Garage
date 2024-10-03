@@ -25,9 +25,10 @@ internal class Airplane : Vehicle
         string color,
         int numberOfWheels,
         int maxSpeed,
-        string owner) : base(registration, color, numberOfWheels, maxSpeed, owner)
+        string owner) : base()
     {
         Data = new AirplaneData();
+        SetData(registration, color, numberOfWheels, maxSpeed, owner);
     }
 
 
@@ -36,9 +37,10 @@ internal class Airplane : Vehicle
         int numberOfWheels,
         int maxSpeed,
         string owner,
-        int numberOfEngines) : base(registration, color, numberOfWheels, maxSpeed, owner)
+        int numberOfEngines) : base()
     {
         Data = new AirplaneData();
+        SetData(registration, color, numberOfWheels, maxSpeed, owner);
 
         NumberOfEngines = numberOfEngines;
     }

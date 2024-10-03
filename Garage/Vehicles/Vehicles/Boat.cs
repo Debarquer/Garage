@@ -24,9 +24,10 @@ internal class Boat : Vehicle
         string color,
         int numberOfWheels,
         int maxSpeed,
-        string owner) : base(registration, color, numberOfWheels, maxSpeed, owner)
+        string owner) : base()
     {
         Data = new BoatData();
+        SetData(registration, color, numberOfWheels, maxSpeed, owner);
     }
 
     public Boat(string registration,
@@ -34,9 +35,10 @@ internal class Boat : Vehicle
         int numberOfWheels,
         int maxSpeed,
         string owner,
-        int length) : base(registration, color, numberOfWheels, maxSpeed, owner)
+        int length) : base()
     {
         Data = new BoatData();
+        SetData(registration, color, numberOfWheels, maxSpeed, owner);
 
         Length = length;
     }

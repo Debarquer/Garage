@@ -25,9 +25,10 @@ internal class Unicycle : Vehicle
         string color,
         int numberOfWheels,
         int maxSpeed,
-        string owner) : base(registration, color, numberOfWheels, maxSpeed, owner)
+        string owner) : base()
     {
         Data = new UnicycleData();
+        SetData(registration, color, numberOfWheels, maxSpeed, owner);
     }
 
     public Unicycle(string registration,
@@ -35,10 +36,10 @@ internal class Unicycle : Vehicle
         int numberOfWheels,
         int maxSpeed,
         string owner,
-        int height) : base(registration, color, numberOfWheels, maxSpeed, owner)
+        int height) : base()
     {
         Data = new UnicycleData();
-
+        SetData(registration, color, numberOfWheels, maxSpeed, owner);
         Height = height;
     }
 

@@ -24,9 +24,10 @@ internal class Bus : Vehicle
         string color,
         int numberOfWheels,
         int maxSpeed,
-        string owner) : base(registration, color, numberOfWheels, maxSpeed, owner)
+        string owner) : base()
     {
         Data = new BusData();
+        SetData(registration, color, numberOfWheels, maxSpeed, owner);
     }
 
     public Bus(string registration,
@@ -34,10 +35,10 @@ internal class Bus : Vehicle
         int numberOfWheels,
         int maxSpeed,
         string owner,
-        int numberOfSeats) : base(registration, color, numberOfWheels, maxSpeed, owner)
+        int numberOfSeats) : base()
     {
         Data = new BusData();
-
+        SetData(registration, color, numberOfWheels, maxSpeed, owner);
         NumberOfSeats = numberOfSeats;
     }
 
