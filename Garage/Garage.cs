@@ -3,7 +3,7 @@ using System.Collections;
 
 namespace Garage;
 
-internal class Garage<T>: IEnumerable<T> where T : IVehicle
+public class Garage<T>: IEnumerable<T> where T : IVehicle
 {
     public int Capacity { get; }
     public string Name { get; }

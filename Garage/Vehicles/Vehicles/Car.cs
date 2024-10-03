@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace Garage.Vehicles.Vehicles;
 
-internal class Car : Vehicle
+public class Car : Vehicle
 {
     public class CarData : VehicleData
     {

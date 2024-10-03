@@ -1,6 +1,6 @@
 ﻿namespace Garage.Contracts;
 
-internal interface IVehicleData
+public interface IVehicleData
 {
     public string Registration { get; set; }
     public string Color { get; set; }

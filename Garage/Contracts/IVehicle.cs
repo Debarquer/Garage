@@ -1,8 +1,6 @@
-﻿using System.Drawing;
+﻿namespace Garage.Contracts;
 
-namespace Garage.Contracts;
-
-internal interface IVehicle
+public interface IVehicle
 {
     public string Registration {  get; }
     public string Color { get; }

@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 
 namespace Garage;
 
-internal class GarageHandler<T> : IHandler<T> where T : IVehicle
+public class GarageHandler<T> : IHandler<T> where T : IVehicle
 {
     private Dictionary<string, Garage<T>> garages = [];
     IUI ui;

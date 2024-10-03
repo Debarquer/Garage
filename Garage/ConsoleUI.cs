@@ -2,7 +2,7 @@
 
 namespace Garage
 {
-    internal class ConsoleUI : IUI
+    public class ConsoleUI : IUI
     {
         public void PrintMessage(string message)
         {
