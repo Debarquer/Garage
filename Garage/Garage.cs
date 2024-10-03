@@ -109,7 +109,7 @@ public class Garage<T>: IEnumerable<T> where T : IVehicle
         {
             if (spots[i] == null) continue;
 
-            if (spots[i].Value.Registration == registration)
+            if (spots[i].Value.Registration.ToLower() == registration.ToLower())
             {
                 spots[i] = null;
             }

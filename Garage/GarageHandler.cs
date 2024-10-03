@@ -143,6 +143,12 @@ public class GarageHandler<T> : IHandler<T> where T : IVehicle
 
     public void PrintAllVehicles()
     {
+        if(garages.Count == 0)
+        {
+            ui.PrintMessage("No garages available.");
+            return;
+        }
+
         foreach(Garage<T> garage in garages.Values)
         {
             PrintAllVehicles(garage.Name);
@@ -214,6 +220,18 @@ public class GarageHandler<T> : IHandler<T> where T : IVehicle
         else return AddGarage(name, capacity);
     }
 
+    public void RemoveGarage(string name)
+    {
+        if (!HasGarage(name))
+        {
+            ui.PrintMessage($"Failed to remove garage. No garage found with name: {name}");
+            return;
+        }
+
+        ClearGarage(name);
+        garages.Remove(name);
+    }
+
     private bool ValidateGarage(string name)
     {
         name = name.ToLower();
@@ -248,6 +266,8 @@ public class GarageHandler<T> : IHandler<T> where T : IVehicle
         garage.Clear();
         ui.PrintMessage($"Garage {garageName} cleared");
     }
+
+    public int GetNumberOfGarages() => garages.Count;
 
     Dictionary<string, Func<int, int, bool>> opToFunc = new()
     {
@@ -376,13 +396,13 @@ public class GarageHandler<T> : IHandler<T> where T : IVehicle
         SaveAll(Directories.SavePath);
     }
 
-    public void SaveAll(string path)
+    public void SaveAll(string directory)
     {
         try
         {
             foreach (Garage<T> garage in garages.Values)
             {
-                Save(garage);
+                Save(garage, directory);
             }
         }
         catch(Exception ex)
@@ -396,12 +416,12 @@ public class GarageHandler<T> : IHandler<T> where T : IVehicle
         if (!ValidateGarage(garageName)) return;
 
         Garage<T> garage = GetGarage(garageName);
-        Save(garage);
+        Save(garage, Directories.SavePath);
     }
 
-    public void Save(Garage<T> garage)
+    public void Save(Garage<T> garage, string directory)
     {
-        string filePath = Path.Combine(Directories.SavePath, garage.Name + ".txt");
+        string filePath = Path.Combine(directory, garage.Name + ".txt");
 
         if (!File.Exists(filePath))
         {
@@ -424,13 +444,12 @@ public class GarageHandler<T> : IHandler<T> where T : IVehicle
         LoadAll(Directories.SavePath);
     }
 
-    public void LoadAll(string path)
+    public void LoadAll(string directory)
     {
         try
         {
-            foreach(string f in Directory.GetFiles(Directories.SavePath))
+            foreach(string f in Directory.GetFiles(directory))
             {
-                if (Path.GetFileName(f).Contains("data")) continue;
                 Load(f);
             }
         }

@@ -54,6 +54,13 @@ internal interface IHandler<T> where T : IVehicle
     public Garage<T> AddGarage(string name, int capacity);
 
     /// <summary>
+    /// Removes a garage with the specified name.
+    /// </summary>
+    /// <param name="name"></param>
+    /// <returns></returns>
+    public void RemoveGarage(string name);
+
+    /// <summary>
     /// Returns the garage with the matching name.
     /// </summary>
     /// <param name="name"></param>
@@ -68,6 +75,12 @@ internal interface IHandler<T> where T : IVehicle
     public bool HasGarage(string name);
 
     /// <summary>
+    /// Returns the number of garages.
+    /// </summary>
+    /// <returns></returns>
+    public int GetNumberOfGarages();
+
+    /// <summary>
     /// Prints all contained garages to the ui.
     /// </summary>
     public void PrintGarages();
@@ -78,4 +91,44 @@ internal interface IHandler<T> where T : IVehicle
     /// <param name="garage"></param>
     /// <param name="parameters"></param>
     public void PrintVehiclesMatchingPattern(string garageName, string[] parameters);
+
+    /// <summary>
+    /// Saves all garages to files.  Uses the directory specified in the Directories utility class.
+    /// </summary>
+    public void SaveAll();
+
+    /// <summary>
+    /// Saves all garages to files created in the given directory.
+    /// </summary>
+    /// <param name="path"></param>
+    public void SaveAll(string directory);
+
+    /// <summary>
+    /// Find a garage matching the name and save it to a file.  Uses the directory specified in the Directories utility class.
+    /// </summary>
+    /// <param name="garageName"></param>
+    public void Save(string garageName);
+
+    /// <summary>
+    /// Save the specified garage to a file in the specified directory.
+    /// </summary>
+    /// <param name="garage"></param>
+    public void Save(Garage<T> garage, string directory);
+
+    /// <summary>
+    /// Load in all garges from files. Uses the directory specified in the Directories utility class.
+    /// </summary>
+    public void LoadAll();
+
+    /// <summary>
+    /// Load in all garages from files found in the specified directory.
+    /// </summary>
+    /// <param name="directory"></param>
+    public void LoadAll(string directory);
+
+    /// <summary>
+    /// Loads a garage from the specified path.
+    /// </summary>
+    /// <param name="filePath"></param>
+    public void Load(string filePath);
 }
