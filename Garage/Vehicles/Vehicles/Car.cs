@@ -1,13 +1,24 @@
 ﻿using Garage.Contracts;
+using Newtonsoft.Json;
 
 namespace Garage.Vehicles.Vehicles;
 
 internal class Car : Vehicle
 {
-    public FuelType FuelType { get; set; }
-    //public string FuelType { get; set; }
+    public class CarData : VehicleData
+    {
+        public FuelType FuelType { get; set; }
+    }
 
-    public Car() { }
+    public FuelType FuelType
+    {
+        get => ((CarData)Data).FuelType;
+        private set => ((CarData)Data).FuelType = value;
+    }
+    public Car() 
+    { 
+        Data = new CarData();
+    }
 
     public Car(string registration,
         string color,
@@ -15,6 +26,7 @@ internal class Car : Vehicle
         int maxSpeed,
         string owner) : base(registration, color, numberOfWheels, maxSpeed, owner)
     {
+        Data = new CarData();
     }
 
     public Car(string registration,
@@ -24,6 +36,8 @@ internal class Car : Vehicle
         string owner,
         FuelType fuelType) : base(registration, color, numberOfWheels, maxSpeed, owner)
     {
+        Data = new CarData();
+
         FuelType = fuelType;
     }
 
@@ -51,5 +65,11 @@ internal class Car : Vehicle
     public override string ToString()
     {
         return base.ToString() + $" Fuel type: {FuelType}";
+    }
+
+    public override void SerializeData(string line)
+    {
+        JsonSerializerSettings settings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.None };
+        this.Data = JsonConvert.DeserializeObject<CarData>(line, settings);
     }
 }

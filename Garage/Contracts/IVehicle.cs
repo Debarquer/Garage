@@ -10,5 +10,7 @@ internal interface IVehicle
     public int MaxSpeed { get; }
     public string Owner { get; }
 
-    public void PromptUserForAdditionalData(IUI ui);  
+    public void PromptUserForAdditionalData(IUI ui);
+    public void Save(StreamWriter outputFile);
+    public void SerializeData(string filePathData);
 }

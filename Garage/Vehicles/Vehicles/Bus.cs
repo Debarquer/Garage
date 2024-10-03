@@ -1,12 +1,24 @@
 ﻿using Garage.Contracts;
+using Newtonsoft.Json;
 
 namespace Garage.Vehicles.Vehicles;
 
 internal class Bus : Vehicle
 {
-    public int NumberOfSeats { get; set; }
+    public class BusData : VehicleData
+    {
+        public int NumberOfSeats { get; set; }
+    }
 
-    public Bus() { }
+    public int NumberOfSeats
+    {
+        get => ((BusData)Data).NumberOfSeats;
+        private set => ((BusData)Data).NumberOfSeats = value;
+    }
+    public Bus() 
+    { 
+        Data = new BusData();
+    }
 
     public Bus(string registration,
         string color,
@@ -14,6 +26,7 @@ internal class Bus : Vehicle
         int maxSpeed,
         string owner) : base(registration, color, numberOfWheels, maxSpeed, owner)
     {
+        Data = new BusData();
     }
 
     public Bus(string registration,
@@ -23,6 +36,8 @@ internal class Bus : Vehicle
         string owner,
         int numberOfSeats) : base(registration, color, numberOfWheels, maxSpeed, owner)
     {
+        Data = new BusData();
+
         NumberOfSeats = numberOfSeats;
     }
 
@@ -34,5 +49,11 @@ internal class Bus : Vehicle
     public override string ToString()
     {
         return base.ToString() + $" Number of seats: {NumberOfSeats}";
+    }
+
+    public override void SerializeData(string line)
+    {
+        JsonSerializerSettings settings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.None };
+        this.Data = JsonConvert.DeserializeObject<BusData>(line, settings);
     }
 }

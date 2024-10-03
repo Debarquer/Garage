@@ -1,12 +1,25 @@
 ﻿using Garage.Contracts;
+using Newtonsoft.Json;
 
 namespace Garage.Vehicles.Vehicles;
 
 internal class Airplane : Vehicle
 {
-    public int NumberOfEngines { get; set; }
+    public class AirplaneData : VehicleData
+    {
+        public int NumberOfEngines { get; set; }
+    }
 
-    public Airplane() { }
+    public int NumberOfEngines
+    {
+        get => ((AirplaneData)Data).NumberOfEngines;
+        private set => ((AirplaneData)Data).NumberOfEngines = value;
+    }
+
+    public Airplane() 
+    { 
+        Data = new AirplaneData();
+    }
 
     public Airplane(string registration,
         string color,
@@ -14,6 +27,7 @@ internal class Airplane : Vehicle
         int maxSpeed,
         string owner) : base(registration, color, numberOfWheels, maxSpeed, owner)
     {
+        Data = new AirplaneData();
     }
 
 
@@ -24,6 +38,8 @@ internal class Airplane : Vehicle
         string owner,
         int numberOfEngines) : base(registration, color, numberOfWheels, maxSpeed, owner)
     {
+        Data = new AirplaneData();
+
         NumberOfEngines = numberOfEngines;
     }
 
@@ -35,5 +51,11 @@ internal class Airplane : Vehicle
     public override string ToString()
     {
         return base.ToString() + $" Number of engines: {NumberOfEngines}";
+    }
+
+    public override void SerializeData(string line)
+    {
+        JsonSerializerSettings settings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.None };
+        this.Data = JsonConvert.DeserializeObject<AirplaneData>(line, settings);
     }
 }

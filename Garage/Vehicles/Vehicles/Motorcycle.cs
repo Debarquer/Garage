@@ -1,12 +1,24 @@
 ﻿using Garage.Contracts;
+using Newtonsoft.Json;
 
 namespace Garage.Vehicles.Vehicles;
 
 internal class Motorcycle : Vehicle
 {
-    public int CylinderVolume { get; set; }
+    public class MotorcycleData : VehicleData
+    {
+        public int CylinderVolume { get; set; }
+    }
 
-    public Motorcycle() { }
+    public int CylinderVolume
+    {
+        get => ((MotorcycleData)Data).CylinderVolume;
+        private set => ((MotorcycleData)Data).CylinderVolume = value;
+    }
+    public Motorcycle() 
+    { 
+        Data = new MotorcycleData();
+    }
 
     public Motorcycle(string registration,
     string color,
@@ -14,6 +26,7 @@ internal class Motorcycle : Vehicle
     int maxSpeed,
     string owner) : base(registration, color, numberOfWheels, maxSpeed, owner)
     {
+        Data = new MotorcycleData();
     }
 
     public Motorcycle(string registration,
@@ -23,6 +36,8 @@ internal class Motorcycle : Vehicle
         string owner,
         int cylinderVolume) : base(registration, color, numberOfWheels, maxSpeed, owner)
     {
+        Data = new MotorcycleData();
+
         CylinderVolume = cylinderVolume;
     }
 
@@ -34,5 +49,11 @@ internal class Motorcycle : Vehicle
     public override string ToString()
     {
         return base.ToString() + $" Cylinder volume: {CylinderVolume}";
+    }
+
+    public override void SerializeData(string line)
+    {
+        JsonSerializerSettings settings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.None };
+        this.Data = JsonConvert.DeserializeObject<MotorcycleData>(line, settings);
     }
 }
