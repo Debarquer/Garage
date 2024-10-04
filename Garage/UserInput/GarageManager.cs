@@ -37,6 +37,13 @@ internal class GarageManager : CommandManager
                PrintTypes
             ),
             new Command(
+               "printpatternall",
+               "?type ?color ?numberOfWheels ?maxSpeed ?owner ?registration",
+               "Prints all vehicles in all garages matching the pattern. Use the pattern type:value.",
+               PrintAllVehiclesMatchingPattern,
+               true
+            ),
+            new Command(
                "printpattern",
                "garage ?type ?color ?numberOfWheels ?maxSpeed ?owner ?registration",
                "Prints all vehicles in garage matching the pattern. Use the pattern type:value.",
@@ -105,6 +112,7 @@ internal class GarageManager : CommandManager
         }
     }
     private void PrintTypes(string[] parameters) => garageHandler.PrintTypes(parameters[0]);
+    private void PrintAllVehiclesMatchingPattern(string[] parameters) => garageHandler.PrintAllVehiclesMatchingPattern(parameters);
     private void PrintVehiclesMatchingPattern(string[] parameters) => garageHandler.PrintVehiclesMatchingPattern(parameters[0], parameters.Skip(1).ToArray());
     private void AddVehicle(string[] parameters)
     {

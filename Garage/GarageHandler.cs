@@ -282,6 +282,14 @@ public class GarageHandler<T> : IHandler<T> where T : IVehicle
         } }
     };
 
+    public void PrintAllVehiclesMatchingPattern(string[] parameters)
+    {
+        foreach(Garage<T> garage in garages.Values)
+        {
+            PrintVehiclesMatchingPattern(garage.Name, parameters);
+        }
+    }
+
     public void PrintVehiclesMatchingPattern(string garageName, string[] parameters)
     {
         if (!ValidateGarage(garageName)) return;
@@ -378,7 +386,7 @@ public class GarageHandler<T> : IHandler<T> where T : IVehicle
             }
         }
 
-        ui.PrintMessage($"{vehicles.Count} matches.");
+        ui.PrintMessage($"{vehicles.Count} matches in {garageName}.");
         foreach(var vehicle in vehicles)
         {
             ui.PrintMessage($"{vehicle.ToString()}");

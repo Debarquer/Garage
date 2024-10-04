@@ -86,6 +86,12 @@ internal interface IHandler<T> where T : IVehicle
     public void PrintGarages();
 
     /// <summary>
+    /// Calls PrintVehiclesMatchingPattern on all stored garages.
+    /// </summary>
+    /// <param name="parameters"></param>
+    public void PrintAllVehiclesMatchingPattern(string[] parameters);
+
+    /// <summary>
     /// Prints all the vehicles from the garage matching the pattern.
     /// </summary>
     /// <param name="garage"></param>
