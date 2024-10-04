@@ -7,7 +7,7 @@ public interface IVehicle
     public int NumberOfWheels { get; }
     public int MaxSpeed { get; }
     public string Owner { get; }
-    public Type DataType { get; }
+    public Type MatchableObjectType { get; }
     public IVehicleData Data { get; }
 
     public void PromptUserForAdditionalData(IUI ui);

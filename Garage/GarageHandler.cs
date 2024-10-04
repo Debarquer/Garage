@@ -2,6 +2,7 @@
 using Garage.Vehicles;
 using Garage.Vehicles.Vehicles;
 using Newtonsoft.Json;
+using System.Reflection;
 
 namespace Garage;
 
@@ -269,21 +270,14 @@ public class GarageHandler<T> : IHandler<T> where T : IVehicle
 
     public int GetNumberOfGarages() => garages.Count;
 
-    Dictionary<string, Func<int, int, bool>> opToFunc = new()
-    {
-        {"=", (int a, int b) => {
-            return a == b;
-        } },
-        {">", (int a, int b) => {
-            return a > b;
-        } },
-        {"<", (int a, int b) => {
-            return a < b;
-        } }
-    };
-
     public void PrintAllVehiclesMatchingPattern(string[] parameters)
     {
+        if(garages.Count == 0)
+        {
+            ui.PrintMessage("No garages available.");
+            return;
+        }
+
         foreach(Garage<T> garage in garages.Values)
         {
             PrintVehiclesMatchingPattern(garage.Name, parameters);
@@ -295,101 +289,21 @@ public class GarageHandler<T> : IHandler<T> where T : IVehicle
         if (!ValidateGarage(garageName)) return;
 
         Garage<T> garage = GetGarage(garageName);
-        T[] v = GetAllVehicles(garage);
+        IPatternMatchable[] allObjects = GetAllVehicles(garage).Select(x => x as IPatternMatchable).ToArray();
 
-        if(v == null || v.Length == 0)
+        if (allObjects == null || allObjects.Length == 0)
         {
             ui.PrintMessage($"No vehicles found in garage {garage}");
             return;
         }
 
-        bool matches = true;
+        PatternMatcher<IPatternMatchable> patternMatcher = new();
+        IPatternMatchable[] matchingVehicles = patternMatcher.GetObjectsMatchingPattern(allObjects, parameters);
 
-        List<T> vehicles = new List<T>();   
-
-        foreach(var vehicle in v)
+        ui.PrintMessage($"{matchingVehicles.Length} matches in {garageName}.");
+        foreach(IPatternMatchable vehicle in matchingVehicles)
         {
-            matches = true;
-            foreach(string s in parameters)
-            {
-                string op = "";
-                foreach(string ops in opToFunc.Keys)
-                {
-                    if (s.Contains(ops))
-                    {
-                        op = ops;
-                        break;
-                    }
-                }
-
-                string[] parameterSplit = s.Split(op);
-                if (parameterSplit.Length != 2)
-                {
-                    ui.PrintMessage("Invalid parameter");
-                    matches = false;
-                    break;
-                }
-
-                string parameterName = parameterSplit[0];
-                string parameterValue = parameterSplit[1];
-
-                if(parameterName == "type")
-                {
-                    if(parameterValue.ToLower() == vehicle.GetType().Name.ToLower())
-                    {
-                        continue;
-                    }
-                    else
-                    {
-                        matches = false;
-                        break;
-                    }
-                }
-
-                var props = vehicle.DataType.GetProperties();
-
-                bool foundProp = false;
-                foreach (var prop in props)
-                {
-                    if (prop.Name.ToLower() == parameterName.ToLower())
-                    {
-                        foundProp = true;
-                        if(prop.PropertyType.Name == "Int32")
-                        {
-                            int a = int.Parse(parameterValue);
-                            if (!opToFunc[op]((int)prop.GetValue(vehicle.Data), a))
-                            {
-                                matches = false;
-                                break;
-                            }
-                        }
-                        else {
-                            if (prop.GetValue(vehicle.Data).ToString() != parameterValue)
-                            {
-                                matches = false;
-                                break;
-                            }
-                        }
-
-                    }
-                }
-                if (!foundProp)
-                {
-                    matches = false;
-                    break;
-                }
-            }
-
-            if(matches)
-            {
-                vehicles.Add(vehicle);
-            }
-        }
-
-        ui.PrintMessage($"{vehicles.Count} matches in {garageName}.");
-        foreach(var vehicle in vehicles)
-        {
-            ui.PrintMessage($"{vehicle.ToString()}");
+            ui.PrintMessage($"{vehicle}");
         }
     }
 

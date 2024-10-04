@@ -3,9 +3,9 @@ using Newtonsoft.Json;
 
 namespace Garage.Vehicles;
 
-public abstract class Vehicle : IVehicle
+public abstract class Vehicle : IVehicle, IPatternMatchable
 {
-    public abstract class VehicleData : IVehicleData
+    public abstract class VehicleData : IVehicleData, IMatchableData
     {
         public string Registration { get; set; }
         public string Color { get; set; }
@@ -15,6 +15,11 @@ public abstract class Vehicle : IVehicle
     }
 
     public virtual IVehicleData Data { get; protected set; }
+    public virtual IMatchableData MatchableData 
+    {
+        get => Data;
+    }
+    public Type MatchableObjectType => Data.GetType();
 
     public string Registration 
     { 
@@ -42,8 +47,6 @@ public abstract class Vehicle : IVehicle
         private set => Data.Owner = value;
     }
 
-    public Type DataType => Data.GetType();
-
     public Vehicle() { }
 
     public Vehicle(
@@ -69,7 +72,7 @@ public abstract class Vehicle : IVehicle
 
     public override string ToString()
     {
-        return $"{Registration}: {Color} {NumberOfWheels} wheels Max {MaxSpeed}kmph Owner: {Owner}";
+        return $"{GetType().Name} {Registration}: {Color} {NumberOfWheels} wheels Max {MaxSpeed}kmph Owner: {Owner}";
     }
 
     public void Save(StreamWriter outputFile/*, StreamWriter outputFileData*/)

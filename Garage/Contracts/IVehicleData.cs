@@ -1,6 +1,6 @@
 ﻿namespace Garage.Contracts;
 
-public interface IVehicleData
+public interface IVehicleData : IMatchableData
 {
     public string Registration { get; set; }
     public string Color { get; set; }
