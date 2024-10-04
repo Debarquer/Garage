@@ -317,7 +317,7 @@ public class GarageHandler<T> : IHandler<T> where T : IVehicle
                 string[] parameterSplit = s.Split(op);
                 if (parameterSplit.Length != 2)
                 {
-                    ui.PrintMessage("Invalid paramter");
+                    ui.PrintMessage("Invalid parameter");
                     matches = false;
                     break;
                 }
@@ -338,7 +338,7 @@ public class GarageHandler<T> : IHandler<T> where T : IVehicle
                     }
                 }
 
-                var props = vehicle.GetType().GetProperties();
+                var props = vehicle.DataType.GetProperties();
 
                 bool foundProp = false;
                 foreach (var prop in props)
@@ -349,14 +349,14 @@ public class GarageHandler<T> : IHandler<T> where T : IVehicle
                         if(prop.PropertyType.Name == "Int32")
                         {
                             int a = int.Parse(parameterValue);
-                            if (!opToFunc[op]((int)prop.GetValue(vehicle), a))
+                            if (!opToFunc[op]((int)prop.GetValue(vehicle.Data), a))
                             {
                                 matches = false;
                                 break;
                             }
                         }
                         else {
-                            if (prop.GetValue(vehicle).ToString() != parameterValue)
+                            if (prop.GetValue(vehicle.Data).ToString() != parameterValue)
                             {
                                 matches = false;
                                 break;

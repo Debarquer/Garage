@@ -14,7 +14,7 @@ public abstract class Vehicle : IVehicle
         public string Owner { get; set; }
     }
 
-    protected virtual IVehicleData Data { get; set; }
+    public virtual IVehicleData Data { get; protected set; }
 
     public string Registration 
     { 
@@ -41,6 +41,8 @@ public abstract class Vehicle : IVehicle
         get => Data.Owner;
         private set => Data.Owner = value;
     }
+
+    public Type DataType => Data.GetType();
 
     public Vehicle() { }
 
