@@ -32,7 +32,7 @@ internal class GarageManager : CommandManager
             ),
             new Command(
                "printtypes",
-               "garage",
+               "?garage",
                "Prints all vehicle types in garage.",
                PrintTypes
             ),
@@ -111,7 +111,18 @@ internal class GarageManager : CommandManager
             garageHandler.PrintAllVehicles();
         }
     }
-    private void PrintTypes(string[] parameters) => garageHandler.PrintTypes(parameters[0]);
+    private void PrintTypes(string[] parameters)
+    {
+        if(parameters.Length > 0)
+        {
+            garageHandler.PrintTypes(parameters[0]);
+        }
+        else
+        {
+            garageHandler.PrintAllTypes();
+        }
+    }
+
     private void PrintAllVehiclesMatchingPattern(string[] parameters) => garageHandler.PrintAllVehiclesMatchingPattern(parameters);
     private void PrintVehiclesMatchingPattern(string[] parameters) => garageHandler.PrintVehiclesMatchingPattern(parameters[0], parameters.Skip(1).ToArray());
     private void AddVehicle(string[] parameters)
@@ -156,7 +167,7 @@ internal class GarageManager : CommandManager
 
     private void RemoveVehicle(string[] parameters)
     {
-        string registration = Utilities.PromptUserForValidString($"Please enter the registration:", ui);
+        string registration = Utilities.PromptUserForString($"Please enter the registration:", ui);
 
         garageHandler.RemoveVehicle(registration, parameters[0]);
     }
@@ -213,7 +224,7 @@ internal class GarageManager : CommandManager
         }
         else if (parameters.Length == 1)
         {
-            garageHandler.Load(Path.Combine(Directories.SavePath, parameters[0]));
+            garageHandler.Load(parameters[0]);
         }
     }
     #endregion

@@ -39,6 +39,11 @@ internal interface IHandler<T> where T : IVehicle
     public void PrintAllVehicles(string garageName);
 
     /// <summary>
+    /// Calls PrintTypes on all stored garages.
+    /// </summary>
+    public void PrintAllTypes();
+
+    /// <summary>
     /// Prints all the types of vehicles and number of vehicles per type.
     /// </summary>
     /// <param name="garage"></param>

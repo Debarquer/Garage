@@ -13,7 +13,7 @@ internal static class VehicleUtility
         IEnumerable<Type> types = Assembly.Load("Garage").GetTypes().Where(t => t.Namespace == "Garage.Vehicles.Vehicles");
         foreach (var availableType in types)
         {
-            if (availableType.Name.ToLower() != "<>c")
+            if (availableType.Name.ToLower() != "<>c" && !availableType.Name.ToLower().Contains("data"))
                 availableTypes += availableType.Name.ToLower() + ", ";
         }
         return availableTypes;

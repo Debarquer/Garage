@@ -2,7 +2,6 @@
 using Garage.Vehicles;
 using Garage.Vehicles.Vehicles;
 using Newtonsoft.Json;
-using System.Reflection;
 
 namespace Garage;
 
@@ -18,6 +17,9 @@ public class GarageHandler<T> : IHandler<T> where T : IVehicle
         //SeedData();
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
     private void SeedData()
     {
         garages["default"] = new Garage<T>(100, "default");
@@ -60,6 +62,11 @@ public class GarageHandler<T> : IHandler<T> where T : IVehicle
         ui.PrintMessage($"Garage: Added vehicle with registration {vehicle.Registration}.");
     }
 
+    /// <summary>
+    /// Returns all vehicles in the specified garage.
+    /// </summary>
+    /// <param name="garage"></param>
+    /// <returns></returns>
     private T[] GetAllVehicles(Garage<T> garage) => garage.GetAllVehicles();
 
     /// <summary>
@@ -169,6 +176,14 @@ public class GarageHandler<T> : IHandler<T> where T : IVehicle
         }
     }
 
+    public void PrintAllTypes()
+    {
+        foreach(Garage<T> garage in garages.Values)
+        {
+            PrintTypes(garage.Name);
+        }
+    }
+
     public void PrintTypes(string garageName)
     {
         if (!ValidateGarage(garageName)) return;
@@ -184,6 +199,7 @@ public class GarageHandler<T> : IHandler<T> where T : IVehicle
             return;
         }
 
+        ui.PrintMessage($"Types in {garageName}");
         foreach (IGrouping<Type, T> item in grouping)
         {
             ui.PrintMessage($"{item.Key.Name}: {item.Count()}");
@@ -215,6 +231,13 @@ public class GarageHandler<T> : IHandler<T> where T : IVehicle
         return garages[garage];
     }
 
+    /// <summary>
+    /// If a garage exists with the specified name, it is returned.
+    /// Otherwise a new one is created.
+    /// </summary>
+    /// <param name="name"></param>
+    /// <param name="capacity"></param>
+    /// <returns></returns>
     private Garage<T> AddOrGet(string name, int capacity)
     {
         if(HasGarage(name)) return GetGarage(name);
@@ -233,6 +256,11 @@ public class GarageHandler<T> : IHandler<T> where T : IVehicle
         garages.Remove(name);
     }
 
+    /// <summary>
+    /// Checks if a garage exists with the specified name.
+    /// </summary>
+    /// <param name="name"></param>
+    /// <returns></returns>
     private bool ValidateGarage(string name)
     {
         name = name.ToLower();

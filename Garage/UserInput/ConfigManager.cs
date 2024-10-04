@@ -26,7 +26,7 @@ namespace Garage.UserInput
                 ),
                 new Command(
                     "loadconfig",
-                    "help ?path",
+                    "?path",
                     "Loads a config file.",
                     LoadConfig
                 ),
@@ -73,6 +73,8 @@ namespace Garage.UserInput
             Directories.Configure(config);
 
             ui.PrintMessage($"New config loaded from {path}");
+            ui.PrintMessage($"Data folder: {config.DataFolder}");
+            ui.PrintMessage($"Garages save folder: {config.GaragesSaveFolder}");
         }
 
         private void Help(string[] parameters) => CommandList.PrintHelp(parameters, ui);
