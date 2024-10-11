@@ -1,5 +1,6 @@
 ﻿using Garage.Contracts;
 using Newtonsoft.Json;
+using static Garage.Vehicles.Vehicles.Bus;
 
 namespace Garage.Vehicles.Vehicles;
 
@@ -8,6 +9,29 @@ internal class Motorcycle : Vehicle
     public class MotorcycleData : VehicleData
     {
         public int CylinderVolume { get; set; }
+
+        public static VehicleData GetData(IUI ui, IHandler<IVehicle> garageHandler, string garageName)
+        {
+            MotorcycleData data = new MotorcycleData();
+
+            data.Registration = Utilities.PromptUserForValidInput(
+                "Please enter the registration:",
+                (string s) =>
+                {
+                    return s.Length > 0 && !garageHandler.HasVehicle(s, garageName);
+                },
+                ui,
+                "Vehicle with that registration already exists or the input is empty."
+            );
+
+            data.Color = Utilities.PromptUserForValidString("Please enter a color:", ui);
+            data.NumberOfWheels = Utilities.PromptUserForValidNumber("Please enter the number of wheels:", ui);
+            data.MaxSpeed = Utilities.PromptUserForValidNumber("Please enter the max speed:", ui);
+            data.Owner = Utilities.PromptUserForValidString("Please enter the owners first name:", ui);
+            data.CylinderVolume = Utilities.PromptUserForValidNumber("Please enter the cylinder volume:", ui);
+
+            return data;
+        }
     }
 
     public int CylinderVolume
@@ -18,6 +42,11 @@ internal class Motorcycle : Vehicle
     public Motorcycle() 
     { 
         Data = new MotorcycleData();
+    }
+
+    public Motorcycle(MotorcycleData motorcycleData)
+    {
+        Data = motorcycleData;
     }
 
     public Motorcycle(string registration,
@@ -40,11 +69,6 @@ internal class Motorcycle : Vehicle
         Data = new MotorcycleData();
         SetData(registration, color, numberOfWheels, maxSpeed, owner);
         CylinderVolume = cylinderVolume;
-    }
-
-    public override void PromptUserForAdditionalData(IUI ui)
-    {
-        CylinderVolume = Utilities.PromptUserForValidNumber("Please enter the cylinder volume:", ui);
     }
 
     public override string ToString()

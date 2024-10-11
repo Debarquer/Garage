@@ -10,7 +10,6 @@ public interface IVehicle
     public Type MatchableObjectType { get; }
     public IVehicleData Data { get; }
 
-    public void PromptUserForAdditionalData(IUI ui);
     public void Save(StreamWriter outputFile);
     public void SerializeData(string filePathData);
 }

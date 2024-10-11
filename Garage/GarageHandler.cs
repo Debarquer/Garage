@@ -18,7 +18,7 @@ public class GarageHandler<T> : IHandler<T> where T : IVehicle
     }
 
     /// <summary>
-    /// 
+    /// Create the default garage and add seed data to the garage.
     /// </summary>
     private void SeedData()
     {
@@ -195,7 +195,7 @@ public class GarageHandler<T> : IHandler<T> where T : IVehicle
 
         if(grouping.Count() == 0) 
         {
-            ui.PrintMessage("No vehicles found.");
+            ui.PrintMessage($"No vehicles found in {garageName}.");
             return;
         }
 

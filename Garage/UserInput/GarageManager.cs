@@ -1,20 +1,21 @@
 ﻿using Garage.Contracts;
 using Garage.Vehicles;
-using Garage.Vehicles.Vehicles;
+using System.ComponentModel.DataAnnotations;
+using System.Runtime.InteropServices.Marshalling;
 
 namespace Garage.UserInput;
 
 internal class GarageManager : CommandManager
 {
-    private IUI ui;
-    private GarageHandler<IVehicle> garageHandler;
+    private readonly IUI ui;
+    private readonly GarageHandler<IVehicle> garageHandler;
 
     public GarageManager(IUI ui, IHandler<IVehicle> garageHandler)
     {
         Name = "Garage";
         Aliases = ["garage", "g"];
 
-        CommandList = new CommandList(new Command[] {
+        CommandList = new CommandList([
            new Command(
                "help",
                "?command_name",
@@ -89,13 +90,13 @@ internal class GarageManager : CommandManager
                "Loads all garages.",
                Load
             ),
-        });
+        ]);
 
         this.ui = ui;
         this.garageHandler = (GarageHandler<IVehicle>?)garageHandler;
     }
 
-    #region Commands
+    #region Command methods
     private void Help(string[] parameters) => CommandList.PrintHelp(parameters, ui);
     private void PrintAllVehicles(string[] parameters)
     {
@@ -124,27 +125,18 @@ internal class GarageManager : CommandManager
     private void PrintVehiclesMatchingPattern(string[] parameters) => garageHandler.PrintVehiclesMatchingPattern(parameters[0], parameters.Skip(1).ToArray());
     private void AddVehicle(string[] parameters)
     {
-        if (!garageHandler.HasGarage(parameters[0]))
+        string garageName = parameters[0];
+        if (!garageHandler.HasGarage(garageName))
         {
             ui.PrintMessage("Invalid garage");
             return;
         }
 
-        if(garageHandler.GetGarage(parameters[0]).IsFull)
+        if(garageHandler.GetGarage(garageName).IsFull)
         {
             ui.PrintMessage("Garage is full");
             return;
         }
-
-        string registration = Utilities.PromptUserForValidInput(
-            "Please enter the registration:",
-            (string s) =>
-            {
-                return s.Length > 0 && !garageHandler.HasVehicle(s, parameters[0]);
-            }, 
-            ui,
-            "Vehicle with that registration already exists or the input is empty."
-            );
 
         string availableTypes = VehicleUtility.GetAvailableVehicleStrings();
         string typeName = Utilities.PromptUserForValidInput($"Please enter the vehicle type ({availableTypes}):",
@@ -160,12 +152,15 @@ internal class GarageManager : CommandManager
             return;
         }
 
-        string color = Utilities.PromptUserForValidString("Please enter a color:", ui);
-        int numberOfWheels = Utilities.PromptUserForValidNumber("Please enter the number of wheels:", ui);
-        int maxSpeed = Utilities.PromptUserForValidNumber("Please enter the max speed:", ui);
-        string owner = Utilities.PromptUserForValidString("Please enter the owners first name:", ui);
+        var dataType = type.GetNestedTypes().Where(t => typeof(IVehicleData).IsAssignableFrom(t)).FirstOrDefault();
+        IVehicleData data = dataType.InvokeMember(
+            "GetData", 
+            System.Reflection.BindingFlags.InvokeMethod, 
+            null, 
+            null,
+            [ui, garageHandler, garageName]) as IVehicleData;
 
-        IVehicle vehicle = (IVehicle?)Activator.CreateInstance(type, registration, color, numberOfWheels, maxSpeed, owner);
+        IVehicle vehicle = (IVehicle?)Activator.CreateInstance(type, data);
 
         if (vehicle == null)
         {
@@ -173,7 +168,6 @@ internal class GarageManager : CommandManager
             return;
         }
 
-        vehicle.PromptUserForAdditionalData(ui);
         garageHandler.AddVehicle(vehicle, parameters[0]);
     }
 

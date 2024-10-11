@@ -38,14 +38,10 @@ public class PatternMatcher<T> where T : IPatternMatchable
         foreach (string parameter in parameters)
         {
             // setup
-            string @operator = "";
-            foreach (string ops in opToFunc.Keys)
+            string @operator = GetOperator(parameter);
+            if(@operator == "")
             {
-                if (parameter.Contains(ops))
-                {
-                    @operator = ops;
-                    break;
-                }
+                return false;
             }
 
             string[] parameterSplit = parameter.Split(@operator);
@@ -73,6 +69,19 @@ public class PatternMatcher<T> where T : IPatternMatchable
         return true;
     }
 
+    private string GetOperator(string parameter)
+    {
+        foreach (string ops in opToFunc.Keys)
+        {
+            if (parameter.Contains(ops))
+            {
+                return ops;
+            }
+        }
+
+        return "";
+    }
+
     private static bool CheckObjectType(T @object, string parameterValue)
     {
         return parameterValue.ToLower() == @object.GetType().Name.ToLower();
@@ -89,7 +98,7 @@ public class PatternMatcher<T> where T : IPatternMatchable
             {
                 foundProp = true;
 
-                if (!CheckProperty(vehicle, @operator, parameterValue, prop))
+                if (!ComparePropertyValue(vehicle, @operator, parameterValue, prop))
                     return false;
             }
         }
@@ -104,24 +113,26 @@ public class PatternMatcher<T> where T : IPatternMatchable
         return true;
     }
 
-    private bool CheckProperty(T vehicle, string op, string parameterValue, PropertyInfo prop)
+    private bool ComparePropertyValue(T vehicle, string op, string parameterValue, PropertyInfo prop)
     {
         if (prop.PropertyType.Name == "Int32")
         {
-            int a = int.Parse(parameterValue);
-            if (!opToFunc[op]((int)prop.GetValue(vehicle.MatchableData), a))
-            {
-                return false;
-            }
+            return CompareInteger(vehicle, op, parameterValue, prop);
         }
         else
         {
-            if (prop.GetValue(vehicle.MatchableData).ToString() != parameterValue)
-            {
-                return false;
-            }
+            return CompareString(vehicle, parameterValue, prop);
         }
+    }
 
-        return true;
+    private static bool CompareString(T vehicle, string parameterValue, PropertyInfo prop)
+    {
+        return prop.GetValue(vehicle.MatchableData).ToString() == parameterValue;
+    }
+
+    private bool CompareInteger(T vehicle, string op, string parameterValue, PropertyInfo prop)
+    {
+        int a = int.Parse(parameterValue);
+        return opToFunc[op]((int)prop.GetValue(vehicle.MatchableData), a);
     }
 }

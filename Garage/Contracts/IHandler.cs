@@ -1,6 +1,6 @@
 ﻿namespace Garage.Contracts;
 
-internal interface IHandler<T> where T : IVehicle
+public interface IHandler<T> where T : IVehicle
 {
     /// <summary>
     /// The capacity of the garage. Readonly.

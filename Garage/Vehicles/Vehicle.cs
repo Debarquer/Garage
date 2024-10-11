@@ -5,13 +5,38 @@ namespace Garage.Vehicles;
 
 public abstract class Vehicle : IVehicle, IPatternMatchable
 {
-    public abstract class VehicleData : IVehicleData, IMatchableData
+    public class VehicleData : IVehicleData, IMatchableData
     {
+        [ReadableName("Registration number")]
         public string Registration { get; set; }
         public string Color { get; set; }
+        [ReadableName("Number of wheels")]
         public int NumberOfWheels { get; set; }
+        [ReadableName("Maximum speed")]
         public int MaxSpeed { get; set; }
         public string Owner { get; set; }
+
+        public static IVehicleData GetData(IUI ui, IHandler<IVehicle> garageHandler, string garageName)
+        {
+            VehicleData data = new VehicleData();
+
+            data.Registration = Utilities.PromptUserForValidInput(
+                "Please enter the registration:",
+                (string s) =>
+                {
+                    return s.Length > 0 && !garageHandler.HasVehicle(s, garageName);
+                },
+                ui,
+                "Vehicle with that registration already exists or the input is empty."
+            );
+
+            data.Color = Utilities.PromptUserForValidString("Please enter a color:", ui);
+            data.NumberOfWheels = Utilities.PromptUserForValidNumber("Please enter the number of wheels:", ui);
+            data.MaxSpeed = Utilities.PromptUserForValidNumber("Please enter the max speed:", ui);
+            data.Owner = Utilities.PromptUserForValidString("Please enter the owners first name:", ui);
+
+            return data;
+        }
     }
 
     public virtual IVehicleData Data { get; protected set; }
@@ -49,6 +74,11 @@ public abstract class Vehicle : IVehicle, IPatternMatchable
 
     public Vehicle() { }
 
+    public Vehicle(IVehicleData data)
+    {
+        Data = data;
+    }
+
     public Vehicle(
         string registration,
         string color,
@@ -67,8 +97,6 @@ public abstract class Vehicle : IVehicle, IPatternMatchable
         MaxSpeed = maxSpeed;
         Owner = owner;
     }
-
-    public abstract void PromptUserForAdditionalData(IUI ui);
 
     public override string ToString()
     {

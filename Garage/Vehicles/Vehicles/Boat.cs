@@ -1,5 +1,6 @@
 ﻿using Garage.Contracts;
 using Newtonsoft.Json;
+using static Garage.Vehicles.Vehicles.Airplane;
 
 namespace Garage.Vehicles.Vehicles;
 
@@ -8,6 +9,29 @@ internal class Boat : Vehicle
     public class BoatData : VehicleData
     {
         public int Length { get; set; }
+
+        public static VehicleData GetData(IUI ui, IHandler<IVehicle> garageHandler, string garageName)
+        {
+            BoatData data = new BoatData();
+
+            data.Registration = Utilities.PromptUserForValidInput(
+                "Please enter the registration:",
+                (string s) =>
+                {
+                    return s.Length > 0 && !garageHandler.HasVehicle(s, garageName);
+                },
+                ui,
+                "Vehicle with that registration already exists or the input is empty."
+            );
+
+            data.Color = Utilities.PromptUserForValidString("Please enter a color:", ui);
+            data.NumberOfWheels = Utilities.PromptUserForValidNumber("Please enter the number of wheels:", ui);
+            data.MaxSpeed = Utilities.PromptUserForValidNumber("Please enter the max speed:", ui);
+            data.Owner = Utilities.PromptUserForValidString("Please enter the owners first name:", ui);
+            data.Length = Utilities.PromptUserForValidNumber("Please enter the length: ", ui);
+
+            return data;
+        }
     }
 
     public int Length
@@ -18,6 +42,11 @@ internal class Boat : Vehicle
     public Boat() 
     { 
         Data = new BoatData();
+    }
+
+    public Boat(VehicleData boatData)
+    {
+        Data = boatData;
     }
 
     public Boat(string registration,
@@ -41,11 +70,6 @@ internal class Boat : Vehicle
         SetData(registration, color, numberOfWheels, maxSpeed, owner);
 
         Length = length;
-    }
-
-    public override void PromptUserForAdditionalData(IUI ui)
-    {
-        Length = Utilities.PromptUserForValidNumber("Please enter the length: ", ui);
     }
 
     public override string ToString()
