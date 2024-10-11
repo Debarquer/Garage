@@ -175,9 +175,6 @@ internal class GarageManager : CommandManager
 
         vehicle.PromptUserForAdditionalData(ui);
         garageHandler.AddVehicle(vehicle, parameters[0]);
-
-        Car car = new Car();
-        garageHandler.AddVehicle(car, parameters[0]);
     }
 
     private void RemoveVehicle(string[] parameters)
