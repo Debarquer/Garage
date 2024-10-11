@@ -1,9 +1,6 @@
 ﻿using Garage.Contracts;
 using Garage.Vehicles;
-using System.Globalization;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
+using Garage.Vehicles.Vehicles;
 
 namespace Garage.UserInput;
 
@@ -133,12 +130,28 @@ internal class GarageManager : CommandManager
             return;
         }
 
+        if(garageHandler.GetGarage(parameters[0]).IsFull)
+        {
+            ui.PrintMessage("Garage is full");
+            return;
+        }
+
+        string registration = Utilities.PromptUserForValidInput(
+            "Please enter the registration:",
+            (string s) =>
+            {
+                return s.Length > 0 && !garageHandler.HasVehicle(s, parameters[0]);
+            }, 
+            ui,
+            "Vehicle with that registration already exists or the input is empty."
+            );
+
         string availableTypes = VehicleUtility.GetAvailableVehicleStrings();
         string typeName = Utilities.PromptUserForValidInput($"Please enter the vehicle type ({availableTypes}):",
             VehicleUtility.ValidateType,
             ui,
             $"Invalid type."
-            );
+        );
 
         Type type = VehicleUtility.GetType(typeName);
         if (!VehicleUtility.IsIVehicle(type))
@@ -151,7 +164,6 @@ internal class GarageManager : CommandManager
         int numberOfWheels = Utilities.PromptUserForValidNumber("Please enter the number of wheels:", ui);
         int maxSpeed = Utilities.PromptUserForValidNumber("Please enter the max speed:", ui);
         string owner = Utilities.PromptUserForValidString("Please enter the owners first name:", ui);
-        string registration = Utilities.PromptUserForValidInput("Please enter the registration:", (string s) => s.Length > 0, ui);
 
         IVehicle vehicle = (IVehicle?)Activator.CreateInstance(type, registration, color, numberOfWheels, maxSpeed, owner);
 
@@ -163,6 +175,9 @@ internal class GarageManager : CommandManager
 
         vehicle.PromptUserForAdditionalData(ui);
         garageHandler.AddVehicle(vehicle, parameters[0]);
+
+        Car car = new Car();
+        garageHandler.AddVehicle(car, parameters[0]);
     }
 
     private void RemoveVehicle(string[] parameters)

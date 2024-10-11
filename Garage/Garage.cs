@@ -7,6 +7,10 @@ public class Garage<T>: IEnumerable<T> where T : IVehicle
 {
     public int Capacity { get; }
     public string Name { get; }
+    public bool IsFull { get => spots
+            .Where(x => x != null)
+            .Where(x => x.Value != null)
+            .Count(x => x.Value != null) == Capacity; }
 
     private GarageSpot<T>[] spots;
 

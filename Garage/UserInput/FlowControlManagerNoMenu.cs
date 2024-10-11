@@ -15,8 +15,8 @@ internal class FlowControlManagerNoMenu : IFlowControlManager
         this.ui = ui;
         initialization?.Invoke();
 
-        commandList = new CommandList(new ICommand[]
-        {
+        commandList = new CommandList(
+        [
             new Command(
                 "help",
                 "help ?command",
@@ -28,8 +28,14 @@ internal class FlowControlManagerNoMenu : IFlowControlManager
                 "",
                 "Exits the application.",
                 (string[] parameters) => {/*Environment.Exit(0)*/}
+            ),
+            new Command(
+                "testcommand",
+                "",
+                "Exits the application.",
+                (string[] parameters) => {/*Environment.Exit(0)*/}
             )
-        },
+        ],
         defaultCommand: new Command(
             "router",
             "",
