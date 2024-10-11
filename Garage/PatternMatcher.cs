@@ -5,134 +5,55 @@ namespace Garage;
 
 public class PatternMatcher<T> where T : IPatternMatchable
 {
-    Dictionary<string, Func<int, int, bool>> opToFunc = new()
+    public T[] GetObjectsMatchingPatternUsingLinq(T[] allObjects, string[] parameterNames, Dictionary<string, string> parameterValues, Func<int, int, bool>[] ops)
     {
-        {"=", (int a, int b) => {
-            return a == b;
-        } },
-        {">", (int a, int b) => {
-            return a > b;
-        } },
-        {"<", (int a, int b) => {
-            return a < b;
-        } }
-    };
-
-    public T[] GetObjectsMatchingPattern(T[] allObjects, string[] parameters)
-    {
-        List<T> matchingObjects = new List<T>();
-
-        foreach (T @object in allObjects)
-        {
-            if (CheckIfObjectIsMatchingPattern(parameters, @object))
-            {
-                matchingObjects.Add(@object);
-            }
-        }
-
-        return matchingObjects.ToArray();
+        return allObjects.Where(@object => MatchesPattern(@object, parameterNames.ToArray(), parameterValues, ops.ToArray())).ToArray();
     }
 
-    public bool CheckIfObjectIsMatchingPattern(string[] parameters, T vehicle)
+    public bool MatchesPattern(T @object, string[] parameterNames, Dictionary<string, string> parameterValues, Func<int, int, bool>[] ops)
     {
-        foreach (string parameter in parameters)
+        for (int i = 0; i < parameterNames.Length; i++)
         {
-            // setup
-            string @operator = GetOperator(parameter);
-            if(@operator == "")
-            {
-                return false;
-            }
+            string? name = parameterNames[i];
+            string? value = parameterValues[name];
+            Func<int, int, bool>? op = ops[i];
 
-            string[] parameterSplit = parameter.Split(@operator);
-            if (parameterSplit.Length != 2)
+            foreach (var property in @object.GetType().GetNestedTypes().FirstOrDefault().GetProperties())
             {
-                return false;
-            }
-
-            string parameterName = parameterSplit[0];
-            string parameterValue = parameterSplit[1];
-
-            // check
-            if (parameterName == "type")
-            {
-                if (!CheckObjectType(vehicle, parameterValue))
-                    return false;
-            }
-            else
-            {
-                if (!CheckProperties(vehicle, @operator, parameterName, parameterValue))
-                    return false;
+                if (name.ToLower() == property.Name.ToLower())
+                {
+                    if (!ComparePropertyValue(value, property, op, @object))
+                    {
+                        return false;
+                    }
+                }
             }
         }
 
         return true;
     }
 
-    private string GetOperator(string parameter)
+    private bool ComparePropertyValue(string value, PropertyInfo property, Func<int, int, bool> op, T @object)
     {
-        foreach (string ops in opToFunc.Keys)
+        if (property.PropertyType.Name == "Int32")
         {
-            if (parameter.Contains(ops))
-            {
-                return ops;
-            }
-        }
-
-        return "";
-    }
-
-    private static bool CheckObjectType(T @object, string parameterValue)
-    {
-        return parameterValue.ToLower() == @object.GetType().Name.ToLower();
-    }
-
-    private bool CheckProperties(T vehicle, string @operator, string parameterName, string parameterValue)
-    {
-        PropertyInfo[] props = vehicle.MatchableObjectType.GetProperties();
-
-        bool foundProp = false;
-        foreach (PropertyInfo prop in props)
-        {
-            if (prop.Name.ToLower() == parameterName.ToLower())
-            {
-                foundProp = true;
-
-                if (!ComparePropertyValue(vehicle, @operator, parameterValue, prop))
-                    return false;
-            }
-        }
-
-        if (!foundProp)
-        {
-            // no matching prop found means that the type was invalid
-            // for example, trying to match the car fueltype to an airplane
-            return false;
-        }
-
-        return true;
-    }
-
-    private bool ComparePropertyValue(T vehicle, string op, string parameterValue, PropertyInfo prop)
-    {
-        if (prop.PropertyType.Name == "Int32")
-        {
-            return CompareInteger(vehicle, op, parameterValue, prop);
+            return CompareInteger(@object, op, value, property);
         }
         else
         {
-            return CompareString(vehicle, parameterValue, prop);
+            return CompareString(@object, value, property);
         }
+    }
+
+    private bool CompareInteger(T vehicle, Func<int, int, bool> op, string parameterValue, PropertyInfo prop)
+    {
+        int a = int.Parse(parameterValue);
+        int b = (int)prop.GetValue(vehicle.MatchableData);
+        return op(b, a);
     }
 
     private static bool CompareString(T vehicle, string parameterValue, PropertyInfo prop)
     {
         return prop.GetValue(vehicle.MatchableData).ToString() == parameterValue;
-    }
-
-    private bool CompareInteger(T vehicle, string op, string parameterValue, PropertyInfo prop)
-    {
-        int a = int.Parse(parameterValue);
-        return opToFunc[op]((int)prop.GetValue(vehicle.MatchableData), a);
     }
 }

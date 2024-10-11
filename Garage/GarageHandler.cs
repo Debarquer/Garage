@@ -325,14 +325,60 @@ public class GarageHandler<T> : IHandler<T> where T : IVehicle
             return;
         }
 
+        List<string> parameterNames;
+        Dictionary<string, string> parameterValues;
+        List<Func<int, int, bool>> ops;
+        SetupPattern(parameters, out parameterNames, out parameterValues, out ops);
+
         PatternMatcher<IPatternMatchable> patternMatcher = new();
-        IPatternMatchable[] matchingVehicles = patternMatcher.GetObjectsMatchingPattern(allObjects, parameters);
+        IPatternMatchable[] matchingVehicles = patternMatcher.GetObjectsMatchingPatternUsingLinq(allObjects, parameterNames.ToArray(), parameterValues, ops.ToArray());
 
         ui.PrintMessage($"{matchingVehicles.Length} matches in {garageName}.");
-        foreach(IPatternMatchable vehicle in matchingVehicles)
+        foreach (IPatternMatchable vehicle in matchingVehicles)
         {
             ui.PrintMessage($"{vehicle}");
         }
+    }
+
+    private void SetupPattern(string[] parameters, out List<string> parameterNames, out Dictionary<string, string> parameterValues, out List<Func<int, int, bool>> ops)
+    {
+        parameterNames = new List<string>();
+        parameterValues = new Dictionary<string, string>();
+        ops = [];
+        foreach (string parameter in parameters)
+        {
+            string op = GetOperator(parameter);
+            ops.Add(opToFunc[op]);
+
+            parameterNames.Add(parameter.Split(op)[0]);
+            parameterValues.Add(parameter.Split(op)[0], parameter.Split(op)[1]);
+        }
+    }
+
+    readonly Dictionary<string, Func<int, int, bool>> opToFunc = new()
+        {
+            {"=", (int a, int b) => {
+                return a == b;
+            } },
+            {">", (int a, int b) => {
+                return a > b;
+            } },
+            {"<", (int a, int b) => {
+                return a < b;
+            } }
+        };
+
+    private string GetOperator(string parameter)
+    {
+        foreach (string ops in opToFunc.Keys)
+        {
+            if (parameter.Contains(ops))
+            {
+                return ops;
+            }
+        }
+
+        return "";
     }
 
     public void SaveAll()
